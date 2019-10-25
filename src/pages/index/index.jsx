@@ -1,6 +1,7 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Button, Text } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
+import pageInit from '../../utils/pageInit'
 
 import './index.less'
 
@@ -14,10 +15,12 @@ import './index.less'
 //
 // #endregion
 
+
 @connect(({ counter }) => {
   const { count } = counter
   return { count }
 })
+@pageInit()
 class Index extends Component {
 
   componentWillReceiveProps(nextProps) {

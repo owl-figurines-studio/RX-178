@@ -42,17 +42,20 @@ class App extends Component {
     }
   }
 
-  componentDidMount () {}
+  componentDidMount() {
+    //将redux状态挂载到 Taro 对象上，方便使用
+    Taro.$store = store;
+  }
 
-  componentDidShow () {}
+  componentDidShow() { }
 
-  componentDidHide () {}
+  componentDidHide() { }
 
-  componentDidCatchError () {}
+  componentDidCatchError() { }
 
   // 在 App 类中的 render() 函数没有实际作用
   // 请勿修改此函数
-  render () {
+  render() {
     return (
       <Provider store={store}>
         <Index />
