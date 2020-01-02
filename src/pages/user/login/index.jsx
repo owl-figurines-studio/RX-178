@@ -29,7 +29,7 @@ class Login extends Component {
     this.props.dispatch({
       type: 'user/sendVerift',
       payload: {
-        userphone: 18258232093
+        username: '18258232093'
       }
     })
   }
