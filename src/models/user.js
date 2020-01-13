@@ -1,5 +1,9 @@
 import * as userServices from '../servers/user'
 
+const verifyState = {
+  '1000': {'message': '请求发送验证码成功', 'type': 'success'},
+}
+
 export default {
   namespace: "user",
   state: {
