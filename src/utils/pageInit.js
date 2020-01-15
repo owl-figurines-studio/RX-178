@@ -2,7 +2,7 @@ import Taro from '@tarojs/taro'
 import auth from './auth'
 
 function pageInit() {
-  return function Component(Component) {
+  return function WrappedComponent(Component) {
     return class extends Component {
 
       constructor(props) {
@@ -17,6 +17,22 @@ function pageInit() {
 
       //阻塞 didMount ， 鉴权
       async componentDidMount() {
+        Taro.login({
+          success: result => {
+            console.log(result)
+            Taro.atMessage({
+              'message': '登录成功',
+              'type': 'success',
+            })
+          },
+          fail: () => {
+            Taro.atMessage({
+              'message': '登录失败',
+              'type': 'error',
+            })
+          },
+
+        })
         let result = await auth.appCheckAuth();
         //授权成功
         if (result) {

@@ -1,8 +1,5 @@
+import Taro from '@tarojs/taro'
 import * as userServices from '../servers/user'
-
-const verifyState = {
-  '1000': {'message': '请求发送验证码成功', 'type': 'success'},
-}
 
 export default {
   namespace: "user",
@@ -15,6 +12,10 @@ export default {
   effects: {
     * sendVerift({ payload }, { call, put }) {
       const { userphone: userPhone } = payload
+      Taro.atMessage({
+        'message': '消息通知',
+        'type': 'success',
+      })
       yield put({ type: 'saveUserPhone', payload: { userPhone } })
       const { data } = yield call(userServices.sendVerift, payload)
       const { verifyStateCode } = data

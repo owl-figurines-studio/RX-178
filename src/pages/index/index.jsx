@@ -1,6 +1,7 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Button, Text } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
+import BasicPage from '../../containers/BasicPage'
 import pageInit from '../../utils/pageInit'
 
 
@@ -29,7 +30,7 @@ class Login extends Component {
     this.props.dispatch({
       type: 'user/sendVerift',
       payload: {
-        userphone: 18258232093
+        userphone: '18258232093'
       }
     })
   }
@@ -37,10 +38,12 @@ class Login extends Component {
   render() {
     const { verifyStateCode } = this.props
     return (
-      <View className='login'>
-        <Button className='sendVerift' onClick={this.sendVerift}>发送验证</Button>
-        <View><Text>{verifyStateCode}</Text></View>
-      </View>
+      <BasicPage>
+        <View className='login'>
+          <Button className='sendVerift' onClick={this.sendVerift}>发送验证</Button>
+          <View><Text>{verifyStateCode}</Text></View>
+        </View>
+      </BasicPage>
     )
   }
 }
