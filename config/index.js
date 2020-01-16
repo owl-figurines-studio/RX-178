@@ -1,3 +1,5 @@
+const path = require('path')
+
 const config = {
   projectName: 'rx178_01',
   date: '2019-9-16',
@@ -9,6 +11,9 @@ const config = {
   },
   sourceRoot: 'src',
   outputRoot: 'dist',
+  alias: {
+    '@': path.resolve(__dirname, '..', 'src'),
+  },
   plugins: {
     babel: {
       sourceMap: true,

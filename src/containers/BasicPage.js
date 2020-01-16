@@ -1,6 +1,6 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View } from '@tarojs/components'
-import RequestMessage from '../components/RequestMessage'
+import RequestMessage from '@/components/RequestMessage'
 import pageInit from '../utils/pageInit'
 
 @pageInit()
