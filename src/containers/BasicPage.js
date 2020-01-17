@@ -1,7 +1,7 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View } from '@tarojs/components'
-import RequestMessage from '@/components/RequestMessage'
-import pageInit from '../utils/pageInit'
+import RequestMessage from 'src/components/RequestMessage'
+import pageInit from 'src/utils/pageInit'
 
 @pageInit()
 class BasicPage extends Component {
