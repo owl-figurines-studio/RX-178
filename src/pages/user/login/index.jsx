@@ -1,15 +1,12 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Button, Text } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
-import pageInit from '../../utils/pageInit'
-import RequestMessage from '../../../components/requestMessage'
-
+import BasicPage from 'src/containers/BasicPage'
 
 @connect(({ user }) => {
   const { verifyStateCode } = user
   return { verifyStateCode }
 })
-@pageInit()
 class Login extends Component {
 
   componentWillReceiveProps(nextProps) {
@@ -38,11 +35,12 @@ class Login extends Component {
   render() {
     const { verifyStateCode } = this.props
     return (
-      <View className='login'>
-        <RequestMessage />
-        <Button className='sendVerift' onClick={this.sendVerift}>发送验证</Button>
-        <View><Text>{verifyStateCode}</Text></View>
-      </View>
+      <BasicPage>
+        <View className='login'>
+          <Button className='sendVerift' onClick={this.sendVerift}>发送验证</Button>
+          <View><Text>{verifyStateCode}</Text></View>
+        </View>
+      </BasicPage>
     )
   }
 }

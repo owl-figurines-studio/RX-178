@@ -8,6 +8,7 @@ export default {
     userPhone: null,
     verifyStateCode: null,
     userStateCode: null,
+    loginCode: null,
   },
   effects: {
     * sendVerift({ payload }, { call, put }) {
@@ -20,6 +21,11 @@ export default {
       const { data } = yield call(userServices.sendVerift, payload)
       const { verifyStateCode } = data
       yield put({ type: 'saveVerifyState', payload: { verifyStateCode } })
+    },
+    * code2Session({ payload: { code } }, { call, put }) {
+      yield put({ type: 'saveLoginCode', payload: { loginCode: code } })
+      const { data } = yield call(userServices.code2Session, { code })
+      console.log(data)
     },
     * phoneLogin({ payload }, { call, put }) {
       const { data } = yield call(userServices.phoneLogin, payload)
@@ -39,6 +45,9 @@ export default {
     },
     saveUserState(state, { payload: { userStateCode } }) {
       return { ...state, userStateCode }
-    }
+    },
+    saveLoginCode(state, { payload: { loginCode } }) {
+      return { ...state, loginCode }
+    },
   }
 }
