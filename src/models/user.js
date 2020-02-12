@@ -14,7 +14,7 @@ export default {
     * sendVerift({ payload }, { call, put }) {
       const { userphone: userPhone } = payload
       Taro.atMessage({
-        'message': '消息通知',
+        'message': `${userPhone}`,
         'type': 'success',
       })
       yield put({ type: 'saveUserPhone', payload: { userPhone } })

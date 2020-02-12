@@ -62,31 +62,31 @@ class BasicPage extends Component {
   }
 
   login = async () => {
-    const { dispatch } = this.props
-    Taro.login({
-      success: result => {
-        const { code } = result
-        console.log(result)
-        Taro.atMessage({
-          'message': '登录成功',
-          'type': 'success',
-        })
-        dispatch({
-          type: 'user/code2Session',
-          payload: {
-            code,
-          }
-        })
-        console.log(`Hi => ${this.props.loginCode}`)
-      },
-      fail: () => {
-        Taro.atMessage({
-          'message': '登录失败',
-          'type': 'error',
-        })
-      },
+    // const { dispatch } = this.props
+    // Taro.login({
+    //   success: result => {
+    //     const { code } = result
+    //     console.log(result)
+    //     Taro.atMessage({
+    //       'message': '登录成功',
+    //       'type': 'success',
+    //     })
+    //     dispatch({
+    //       type: 'user/code2Session',
+    //       payload: {
+    //         code,
+    //       }
+    //     })
+    //     console.log(`Hi => ${this.props.loginCode}`)
+    //   },
+    //   fail: () => {
+    //     Taro.atMessage({
+    //       'message': '登录失败',
+    //       'type': 'error',
+    //     })
+    //   },
 
-    })
+    // })
     let result = await auth.appCheckAuth();
     //授权成功
     if (result) {

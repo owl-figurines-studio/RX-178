@@ -1,6 +1,7 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, Button, Text } from '@tarojs/components'
+import { View, Text, Navigator } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
+import { AtInput, AtForm, AtButton } from 'taro-ui'
 import BasicPage from 'src/containers/BasicPage'
 
 @connect(({ user }) => {
@@ -8,6 +9,13 @@ import BasicPage from 'src/containers/BasicPage'
   return { verifyStateCode }
 })
 class Login extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      userPhoneNum: null,
+    }
+  }
 
   componentWillReceiveProps(nextProps) {
     console.log(this.props, nextProps)
@@ -24,20 +32,43 @@ class Login extends Component {
   componentDidHide() { }
 
   sendVerift = () => {
+    const { userPhoneNum } = this.state
     this.props.dispatch({
       type: 'user/sendVerift',
       payload: {
-        username: '18258232093'
+        userphone: userPhoneNum
       }
     })
   }
 
+  phoneNumberOnChange = value => {
+    this.setState(
+      {
+        userPhoneNum: value,
+      }
+    )
+  }
+
   render() {
     const { verifyStateCode } = this.props
+    const { userPhoneNum } = this.state
     return (
       <BasicPage>
         <View className='login'>
-          <Button className='sendVerift' onClick={this.sendVerift}>发送验证</Button>
+          <AtForm
+            onSubmit={this.sendVerift}
+          >
+            <AtInput
+              name='userPhoneNum'
+              title='电话'
+              type='number'
+              placeholder='请输入电话号码'
+              value={userPhoneNum}
+              onChange={value => this.phoneNumberOnChange(value)}
+            />
+            <AtButton className='sendVerift' formType='submit'>发送验证</AtButton>
+          </AtForm>
+          <Navigator url='/pages/index/index' >注册页面</Navigator>
           <View><Text>{verifyStateCode}</Text></View>
         </View>
       </BasicPage>
