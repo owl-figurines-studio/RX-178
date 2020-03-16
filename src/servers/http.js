@@ -17,7 +17,7 @@ class httpRequest {
       method: method,
       header: {
         'content-type': contentType,
-        'Authorization': Taro.getStorageSync('Authorization')
+        'Authorization': `Bearer ${Taro.getStorageSync('RX-178')}` || null,
       }
     };
     return Taro.request(option);

@@ -34,7 +34,10 @@ class App extends Component {
   config: Config = {
     pages: [
       'pages/index/index',
-      'pages/user/login/index',
+      'pages/user/verify/index',
+      'pages/acquisition/index/index',
+      'pages/analysis/index/index',
+      'pages/management/index/index',
     ],
     window: {
       backgroundTextStyle: 'light',

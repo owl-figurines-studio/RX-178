@@ -4,13 +4,11 @@ import { connect } from '@tarojs/redux'
 import BasicPage from 'src/containers/BasicPage'
 import { router } from 'src/utils/router'
 
-
-
 @connect(({ user }) => {
   const { verifyStateCode } = user
   return { verifyStateCode }
 })
-class Login extends Component {
+class Acquisition extends Component {
   constructor(props) {
     super(props);
   }
@@ -30,24 +28,17 @@ class Login extends Component {
   render() {
 
     const navBarProps = {
-      title: '首页',
+      title: '数据获取',
     }
 
     return (
       <BasicPage navBarProps={navBarProps} >
         <View >
-          <Navigator url={router('user')} >用户模块</Navigator>
+          <Navigator url={router('index')} >用户模块</Navigator>
         </View>
       </BasicPage>
     )
   }
 }
 
-// #region 导出注意
-//
-// 经过上面的声明后需要将导出的 Taro.Component 子类修改为子类本身的 props 属性
-// 这样在使用这个子类时 Ts 才不会提示缺少 JSX 类型参数错误
-//
-// #endregion
-
-export default Login
+export default Acquisition
