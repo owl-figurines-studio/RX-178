@@ -1,4 +1,4 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro, { Component, navigateTo } from '@tarojs/taro'
 import { View, Navigator } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import BasicPage from 'src/containers/BasicPage'
@@ -13,6 +13,10 @@ import { router } from 'src/utils/router'
 class Login extends Component {
   constructor(props) {
     super(props);
+  }
+
+  componentDidMount(){
+    Taro,navigateTo({url:router('acquisition/image')})
   }
 
   componentWillReceiveProps(nextProps) {

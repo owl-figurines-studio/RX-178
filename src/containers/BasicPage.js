@@ -145,29 +145,38 @@ class BasicPage extends Component {
 
 
   render() {
-    const { children, navBarProps, tabBarProps } = this.props
+    const { children, navBarProps, tabBarProps, tabBarVisible = true } = this.props
     const { currentTabBar } = this.state
     return (
       <View>
-        <AtNavBar
-          {...this.initNavBarProps()}
-          {...navBarProps}
-        />
-        <RequestMessage />
-        {children}
-        <View className={styles.navTabBar}>
-          <AtTabBar
-            tabList={[
-              { title: '数据获取' },
-              { title: '数据分析' },
-              { title: '管理' },
-            ]}
-            onClick={this.tabBarOnClick}
-            current={currentTabBar}
-            {...tabBarProps}
+        <View className={styles.navBar}>
+          <AtNavBar
+            {...this.initNavBarProps()}
+            {...navBarProps}
           />
         </View>
+        <RequestMessage />
+        <View className={styles.content} >
+          {children}
+        </View>
 
+        <View className={styles.navTabBar}>
+          {
+            tabBarVisible ? (
+              <AtTabBar
+                tabList={[
+                  { title: '数据获取' },
+                  { title: '数据分析' },
+                  { title: '管理' },
+                ]}
+                onClick={this.tabBarOnClick}
+                current={currentTabBar}
+                {...tabBarProps}
+              />
+            ) : null
+          }
+
+        </View>
       </View>
     )
   }

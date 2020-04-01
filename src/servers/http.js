@@ -7,16 +7,14 @@ interceptors.forEach(interceptorItem => Taro.addInterceptor(interceptorItem))
 class httpRequest {
 
   baseOptions(params, method = "GET") {
-    let { url, data } = params;
+    let { url, data, contentType } = params;
     const BASE_URL = getBaseUrl(url);
-    let contentType = "application/json";
-    contentType = params.contentType || contentType;
     const option = {
       url: BASE_URL + url,
       data: data,
       method: method,
       header: {
-        'content-type': contentType,
+        'content-type': contentType || "application/x-www-form-urlencoded",
         'Authorization': `Bearer ${Taro.getStorageSync('RX-178')}` || null,
       }
     };

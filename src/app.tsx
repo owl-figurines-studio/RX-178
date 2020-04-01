@@ -36,6 +36,8 @@ class App extends Component {
       'pages/index/index',
       'pages/user/verify/index',
       'pages/acquisition/index/index',
+      'pages/acquisition/image/index',
+      'pages/acquisition/imagePreview/index',
       'pages/analysis/index/index',
       'pages/management/index/index',
     ],

@@ -34,7 +34,7 @@ class Acquisition extends Component {
     return (
       <BasicPage navBarProps={navBarProps} >
         <View >
-          <Navigator url={router('index')} >用户模块</Navigator>
+          <Navigator url={router('acquisition/image')} >图像</Navigator>
         </View>
       </BasicPage>
     )

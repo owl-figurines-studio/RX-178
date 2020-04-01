@@ -27,6 +27,18 @@ export const routes = [
     path: 'acquisition/index',
     component: '/acquisition/index/index'
   },
+  {
+    path: 'acquisition/image',
+    redirect: 'acquisition/image/camera'
+  },
+  {
+    path: 'acquisition/image/camera',
+    component: '/acquisition/image/index'
+  },
+  {
+    path: 'acquisition/image/preview',
+    component: '/acquisition/imagePreview/index'
+  },
   // 数据分析
   {
     path: 'analysis',
