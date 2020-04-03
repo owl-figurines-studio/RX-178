@@ -16,7 +16,7 @@ class httpRequest {
       header: {
         'content-type': contentType || "application/x-www-form-urlencoded",
         'Authorization': `Bearer ${Taro.getStorageSync('RX-178')}` || null,
-      }
+      },
     };
     return Taro.request(option);
   }

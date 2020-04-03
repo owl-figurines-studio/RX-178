@@ -2,6 +2,7 @@ import Taro, { Component } from '@tarojs/taro'
 import { View, Image, Button } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import BasicPage from 'src/containers/BasicPage'
+import { router } from 'src/utils/router'
 import styles from './index.module.less'
 
 
@@ -27,21 +28,23 @@ class ImagePreview extends Component {
 
   componentDidHide() { }
 
-  sendImage = () => {
+  uploadImage = () => {
     const { dispatch, imagePath } = this.props
-    Taro.getFileSystemManager().readFile({
-      filePath: imagePath,
-      encoding: 'base64',
-      success: res => {
-        const { data } = res 
-        dispatch({
-          type: "acquisition/sendImage",
-          payload: {
-            imageBase64: data,
-          },
-        })
+    dispatch({
+      type: 'acquisition/uploadImage',
+      payload: {
+        imagePath,
       },
     })
+  }
+
+  backToCamera = () => {
+    Taro.redirectTo({ url: router('acquisition/image/camera') })
+  }
+
+  confirm = () => {
+    this.uploadImage()
+    Taro.redirectTo({url: router('acquisition')})
   }
 
   render() {
@@ -53,8 +56,11 @@ class ImagePreview extends Component {
     return (
       <BasicPage navBarProps={navBarProps} tabBarVisible={false} >
         <View >
-          <Image className={styles.imagePreview} src={imagePath} />
-          <Button onClick={this.sendImage} >提交</Button>
+          <Image className={styles.imagePreview} src={imagePath} mode='aspectFit' />
+          <View className={styles.buttonArea} >
+            <Button className={styles.confirmButton} onClick={this.confirm} >确认</Button>
+            <Button className={styles.regainButton} onClick={this.backToCamera} >重新获取</Button>
+          </View>
         </View>
       </BasicPage>
     )

@@ -1,5 +1,6 @@
 import Taro, { Component } from '@tarojs/taro'
-import { CoverView, View, Button, Camera, Image } from '@tarojs/components'
+import { View, Camera, Image } from '@tarojs/components'
+import { AtIcon } from 'taro-ui'
 import BasicPage from 'src/containers/BasicPage'
 import { router } from 'src/utils/router';
 import { connect } from '@tarojs/redux'
@@ -26,7 +27,7 @@ class ImageInfo extends Component {
     console.log(this.props, nextProps)
   }
 
-  componentWillUnmount() {}
+  componentWillUnmount() { }
 
   componentDidShow() { }
 
@@ -47,19 +48,22 @@ class ImageInfo extends Component {
       quality: 'high',
       success: res => {
         this.saveImagePath(res.tempImagePath)
-        // this.setState({
-        //   photo: res.tempImagePath
-        // })
-        Taro.navigateTo({url:router('acquisition/image/preview')})
-        // Taro.uploadFile({
-        //   url: "http://127.0.0.1:5000/upload/",
-        //   filePath: res.tempImagePath,
-        //   name: "img",
-        //   success: () => console.log("upload success"),
-        // })
+        Taro.redirectTo({ url: router('acquisition/image/preview') })
       },
     })
     console.log(this.cameraContext)
+  }
+
+  localImage = () => {
+    Taro.chooseImage({
+      count: 1,
+      sizeType: ['original'],
+      sourceType: ['album'],
+      success: res => {
+        this.saveImagePath(res.tempFilePaths[0])
+        Taro.redirectTo({ url: router('acquisition/image/preview') })
+      }
+    })
   }
 
   render() {
@@ -70,15 +74,17 @@ class ImageInfo extends Component {
 
     return (
       <BasicPage navBarProps={navBarProps} tabBarVisible={false} >
-        <View >
-          <Camera className={styles.camera} devicePosition='back' />
-          <CoverView className={styles.cameraBtnArea}>
-            <CoverView className={styles.shutter} > 
-              <Button className={styles.shutterButton} onClick={this.takePhoto} />
-            </CoverView>
-          </CoverView>
+        <View className={styles.backGround} >
+          <Camera className={styles.camera} devicePosition='back' flash='auto' />
+          <View className={styles.cameraBtnArea}>
+            <View className={styles.localImage} onClick={this.localImage} >
+              <AtIcon className={styles.imageIcon} value='image' />
+            </View>
+            <View className={styles.shutter} >
+              <View className={styles.shutterButton} onClick={this.takePhoto} />
+            </View>
+          </View>
         </View>
-        {/* <View><Text>预览</Text></View> */}
         <Image src={this.state.photo} />
       </BasicPage>
     )

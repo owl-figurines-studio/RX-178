@@ -128,7 +128,7 @@ class BasicPage extends Component {
     const url = getCurrentPageUrl()
     const current = tabBarRoute.findIndex(route => router(route) === url)
     this.setState({
-      currentTabBar: current >= 0 ? current : 0
+      currentTabBar: current >= 0 ? current : -1
     })
   }
 
@@ -159,10 +159,9 @@ class BasicPage extends Component {
         <View className={styles.content} >
           {children}
         </View>
-
-        <View className={styles.navTabBar}>
-          {
-            tabBarVisible ? (
+        {
+          tabBarVisible ? (
+            <View className={styles.navTabBar}>
               <AtTabBar
                 tabList={[
                   { title: '数据获取' },
@@ -173,10 +172,9 @@ class BasicPage extends Component {
                 current={currentTabBar}
                 {...tabBarProps}
               />
-            ) : null
-          }
-
-        </View>
+            </View>
+          ) : null
+        }
       </View>
     )
   }
