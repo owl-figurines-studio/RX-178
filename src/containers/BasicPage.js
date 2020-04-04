@@ -134,7 +134,6 @@ class BasicPage extends Component {
 
   tabBarOnClick = index => {
     const { currentTabBar } = this.state
-    console.log(`cu ${currentTabBar} va ${index}`)
     if (index !== currentTabBar) {
       Taro.redirectTo({
         url: router(tabBarRoute[index])
