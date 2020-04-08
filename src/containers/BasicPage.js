@@ -1,5 +1,5 @@
 import Taro, { Component } from '@tarojs/taro'
-import { AtTabBar, AtNavBar } from 'taro-ui'
+import { AtTabBar } from 'taro-ui'
 import { View } from '@tarojs/components'
 import RequestMessage from 'src/components/RequestMessage'
 import { connect } from '@tarojs/redux'
@@ -53,10 +53,6 @@ class BasicPage extends Component {
     Taro.login({
       success: result => {
         const { code } = result
-        Taro.atMessage({
-          'message': '登录成功',
-          'type': 'success',
-        })
         dispatch({
           type: 'user/code2Session',
           payload: {
@@ -144,16 +140,10 @@ class BasicPage extends Component {
 
 
   render() {
-    const { children, navBarProps, tabBarProps, tabBarVisible = true } = this.props
+    const { children, tabBarProps, tabBarVisible = true } = this.props
     const { currentTabBar } = this.state
     return (
       <View>
-        <View className={styles.navBar}>
-          <AtNavBar
-            {...this.initNavBarProps()}
-            {...navBarProps}
-          />
-        </View>
         <RequestMessage />
         <View className={styles.content} >
           {children}
