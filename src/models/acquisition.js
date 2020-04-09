@@ -12,8 +12,8 @@ export default {
   effects: {
     * uploadImage({ payload }, { call, put }) {
       const { data } = yield call(acquisitionServices.uploadImage, payload)
-      const { id } = data
-      yield put({ type: 'saveUploadID', payload: { uploadID: id } })
+      const { path } = data
+      yield put({ type: 'saveUploadID', payload: { uploadID: path } })
       yield put({ type: 'saveIsNeedOCR', payload: { isNeedOCR: true } })
     },
     * ocr({ payload }, { call, put }) {

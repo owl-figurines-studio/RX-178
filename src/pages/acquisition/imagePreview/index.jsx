@@ -35,7 +35,7 @@ class ImagePreview extends Component {
       payload: {
         imagePath,
       },
-    })
+    }).then(() => Taro.redirectTo({ url: router('acquisition') }))
   }
 
   backToCamera = () => {
@@ -44,7 +44,6 @@ class ImagePreview extends Component {
 
   confirm = () => {
     this.uploadImage()
-    Taro.redirectTo({url: router('acquisition')})
   }
 
   render() {

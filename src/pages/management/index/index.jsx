@@ -2,6 +2,7 @@ import Taro, { Component } from '@tarojs/taro'
 import { View, Navigator } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import BasicPage from 'src/containers/BasicPage'
+import { AtList, AtListItem } from "taro-ui"
 import { router } from 'src/utils/router'
 
 @connect(({ user }) => {
@@ -34,7 +35,25 @@ class Management extends Component {
     return (
       <BasicPage navBarProps={navBarProps} >
         <View >
-          <Navigator url={router('index')} >用户模块</Navigator>
+          <AtList>
+            <AtListItem
+              title='人口统计数据'
+              note='个人属性、联系信息、紧急联系人、近亲等'
+              arrow='right'
+              iconInfo={{ size: 25, color: '#78A4FA', value: 'calendar', }}
+            />
+            <AtListItem
+              title='原始数据'
+              note='来自患者的直接数据输入'
+              arrow='right'
+              iconInfo={{ size: 25, color: 'green', value: 'money', }}
+            />
+            <AtListItem
+              title='个人观察和护理信息'
+              arrow='right'
+              iconInfo={{ size: 25, color: '#FF4949', value: 'bookmark', }}
+            />
+          </AtList>
         </View>
       </BasicPage>
     )

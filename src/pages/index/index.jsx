@@ -15,7 +15,7 @@ class Login extends Component {
     super(props);
   }
 
-  componentDidMount(){}
+  componentDidMount() {}
 
   componentWillReceiveProps(nextProps) {
     console.log(this.props, nextProps)

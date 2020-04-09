@@ -18,4 +18,14 @@ export const pageToLogin = () => {
   }
 }
 
+export const getArguments = (arg, isInput = false) => {
+  let argString = ""
+  if (Object.keys(arg).length > 0) {
+    Object.keys(arg).forEach(key => {
+      argString = `${argString} ${key}:"${arg[key]}"`
+    })
+    argString = isInput ? argString : `(${argString})`
+  }
+  return argString
+}
 
