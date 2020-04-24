@@ -85,12 +85,13 @@ class Acquisition extends Component {
   // }
 
   ocr = () => {
-    const { dispatch, ocrID } = this.props
+    const { dispatch, uploadID } = this.props
     dispatch({
-      type: 'acquisition/asyOCRresult',
+      type: 'ocr/createOCR',
       payload: {
-        task_id: ocrID
-      },
+        arg: { path: uploadID },
+        fields: ['id', 'path', 'result', 'imageurl'],
+      }
     })
     this.openOCRtabs()
   }
