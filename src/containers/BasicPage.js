@@ -42,7 +42,7 @@ class BasicPage extends Component {
 
   componentDidMount() {
     this.initCurrentTabBar()
-    if (reLoginCode.findIndex(code => code === this.props.userStateCode) || !Taro.getStorageSync('RX-178')) {
+    if (!Taro.getStorageSync('RX-178')) {
       this.login()
     }
   }
