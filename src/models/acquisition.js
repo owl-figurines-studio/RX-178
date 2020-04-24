@@ -8,6 +8,7 @@ export default {
     isNeedOCR: false,
     uploadID: null,
     ocrResult: null,
+    ocrID: null,
   },
   effects: {
     * uploadImage({ payload }, { call, put }) {
@@ -21,7 +22,19 @@ export default {
       const { result } = data
       yield put({ type: 'saveOCRresult', payload: { ocrResult: result } })
       yield put({ type: 'saveIsNeedOCR', payload: { isNeedOCR: false } })
-    }
+    },
+    * asyOCR({ payload }, { call, put }) {
+      const { data } = yield call(acquisitionServices.asyOCR, payload)
+      const { task_id } = data
+      yield put({ type: 'saveOCRID', payload: { ocrID: task_id } })
+      yield put({ type: 'saveIsNeedOCR', payload: { isNeedOCR: true } })
+    },
+    *asyOCRresult({ payload }, { call, put }) {
+      const { data } = yield call(acquisitionServices.asyOCRresult, payload)
+      const { result } = data
+      yield put({ type: 'saveOCRresult', payload: { ocrResult: result } })
+      yield put({ type: 'saveIsNeedOCR', payload: { isNeedOCR: false } })
+    },
   },
   reducers: {
     saveImagePath(state, { payload: { imagePath } }) {
@@ -35,6 +48,9 @@ export default {
     },
     saveOCRresult(state, { payload: { ocrResult } }) {
       return { ...state, ocrResult }
+    },
+    saveOCRID(state, { payload: { ocrID } }) {
+      return { ...state, ocrID }
     },
   },
 }

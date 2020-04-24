@@ -1,5 +1,7 @@
 import Taro from '@tarojs/taro'
+import * as patientServices from 'src/servers/patient'
 import * as userServices from '../servers/user'
+
 
 const statusMessages = {
   '1000': { message: '请求成功', type: 'success' },
@@ -25,11 +27,13 @@ const statusMessages = {
   '2012': { message: '获取微信认证openid错误', type: 'error' },
 }
 
-const sendMessages = (userStateCode = 1000, disable = false) => {
-  console.log(userStateCode)
-  if (!disable && userStateCode) {
-    const statusMessage = statusMessages[userStateCode]
-    Taro.atMessage({ ...statusMessage })
+const sendMessages = (userStateCode = 1000, userStateMessage = null) => {
+  if (userStateCode) {
+    const { message = '未知异常', type = 'error' } = statusMessages[userStateCode]
+    Taro.atMessage({
+      message: userStateMessage ? userStateMessage : message,
+      type,
+    })
   }
 }
 
@@ -37,9 +41,10 @@ export default {
   namespace: "user",
   state: {
     userName: null,
-    userPhone: null,
-    userStateCode: null,
+    userPhone: 18258232093,
+    userStateCode: 1001,
     loginCode: null,
+    patientInfo: null
   },
   effects: {
     * sendPhoneNum({ payload }, { call, put }) {
@@ -47,21 +52,37 @@ export default {
       yield put({ type: 'saveUserPhone', payload: { userphone } })
       console.log('Hi')
       const { data } = yield call(userServices.sendPhoneNum, payload)
-      const { userStateCode } = data
-      sendMessages(userStateCode)
+      const { userStateCode, userStateMessage } = data
+      yield sendMessages(userStateCode, userStateMessage)
       yield put({ type: 'saveUserState', payload: { userStateCode } })
     },
     * code2Session({ payload: { code } }, { call, put }) {
       yield put({ type: 'saveLoginCode', payload: { loginCode: code } })
-      const { data } = yield call(userServices.code2Session, { code })
-      console.log(data)
+      yield call(userServices.code2Session, { code })
+      // yield sendMessages(userStateCode, userStateMessage).catch(() => {})
     },
     * verifyok({ payload }, { call, put }) {
       const { data } = yield call(userServices.verifyok, payload)
-      const { userStateCode } = data
-      sendMessages(userStateCode)
+      const { userStateCode, userStateMessage } = data
+      yield sendMessages(userStateCode, userStateMessage)
       yield put({ type: 'saveUserState', payload: { userStateCode } })
-    }
+    },
+    *queryPatient({ payload }, { call, put }) {
+      const { data } = yield call(patientServices.queryPatient, payload)
+      const { patient: { edges } } = data
+      const patientInfo = { ...edges[0].node } || {}
+      yield put({ type: 'savePatientInfo', payload: { patientInfo } })
+    },
+    *updatePatient({ payload }, { call, put }) {
+      const { data } = yield call(patientServices.updatePatient, payload)
+      const { updatePatient: { patient: patientInfo } } = data
+      yield put({ type: 'savePatientInfo', payload: { patientInfo } })
+    },
+    *createPatient({ payload }, { call, put }) {
+      const { data } = yield call(patientServices.createPatient, payload)
+      const { createPatient: { patient: patientInfo } } = data
+      yield put({ type: 'savePatientInfo', payload: { patientInfo } })
+    },
   },
   reducers: {
     saveUserName(state, { payload: { userName } }) {
@@ -75,6 +96,9 @@ export default {
     },
     saveLoginCode(state, { payload: { loginCode } }) {
       return { ...state, loginCode }
+    },
+    savePatientInfo(state, { payload: { patientInfo } }) {
+      return { ...state, patientInfo }
     },
   }
 }

@@ -2,7 +2,7 @@
 const path = require('path')
 
 const config = {
-  projectName: 'rx178_01',
+  projectName: 'rx178-02',
   date: '2019-9-16',
   designWidth: 750,
   deviceRatio: {

@@ -57,6 +57,23 @@ export const routes = [
     path: 'management/index',
     component: '/management/index/index'
   },
+  {
+    path: 'management/origin',
+    component: '/management/origin/index'
+  },
+  {
+    path: 'management/patient',
+    component: '/management/patient/index'
+  },
+  {
+    path: 'management/observation',
+    component: '/management/observation/index'
+  },
+  {
+    path: 'management/encounter',
+    component: '/management/encounter/index'
+  },
+  
 ]
 
 //路由器

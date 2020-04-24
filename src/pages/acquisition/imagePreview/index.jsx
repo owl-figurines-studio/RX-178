@@ -31,6 +31,7 @@ class ImagePreview extends Component {
   uploadImage = () => {
     const { dispatch, imagePath } = this.props
     dispatch({
+      // type: 'acquisition/asyOCR',
       type: 'acquisition/uploadImage',
       payload: {
         imagePath,

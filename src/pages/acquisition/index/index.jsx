@@ -21,7 +21,7 @@ import { router } from 'src/utils/router'
 import styles from './index.module.less'
 
 @connect(({ acquisition, ocr, loading }) => {
-  const { isNeedOCR, uploadID, ocrResult } = acquisition
+  const { isNeedOCR, uploadID, ocrResult, ocrID } = acquisition
   const { currentOCRresult, ocrRecord } = ocr
   return {
     isNeedOCR,
@@ -29,6 +29,7 @@ import styles from './index.module.less'
     ocrResult,
     currentOCRresult,
     ocrRecord,
+    ocrID,
     ocrLoading: loading.effects['ocr/createOCR'],
     queryOCRloading: loading.effects['ocr/queryOCR'],
   }
@@ -71,6 +72,17 @@ class Acquisition extends Component {
     Taro.navigateTo({ url })
 
   }
+
+  // ocr = () => {
+  //   const { dispatch, ocrID } = this.props
+  //   dispatch({
+  //     type: 'acquisition/asyOCRresult',
+  //     payload: {
+  //       task_id: ocrID
+  //     },
+  //   })
+  //   this.openOCRtabs()
+  // }
 
   ocr = () => {
     const { dispatch, uploadID } = this.props
@@ -271,7 +283,7 @@ class Acquisition extends Component {
                           <AtInput value={item.value} onChange={value => this.dataChange(index, 'value', value)} />
                         </View>
                         {
-                          index > 0 ? (
+                          dataList.length > 1 ? (
                             <View className='at-col at-col-2'>
                               <AtIcon onClick={() => this.subtractData(index)} value='subtract-circle' color='red' />
                             </View>
