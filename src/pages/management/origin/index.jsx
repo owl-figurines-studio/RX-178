@@ -1,6 +1,6 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Button } from '@tarojs/components'
-import { AtTag, AtModal, AtAccordion, AtIcon } from 'taro-ui'
+import { AtTag, AtModal, AtAccordion, AtIcon, AtList, AtListItem } from 'taro-ui'
 import { connect } from '@tarojs/redux'
 import classNames from 'classnames'
 import BasicPage from 'src/containers/BasicPage'
@@ -140,6 +140,8 @@ class Origin extends Component {
       title: '元数据',
     }
 
+    const encounter = [ { code:'血常规', date:'2000-01-01' } ]
+
     return (
       <BasicPage navBarProps={navBarProps} >
 
@@ -150,9 +152,22 @@ class Origin extends Component {
         /> */}
         {
           current === 0 ? (
-            <View onClick={() => this.currentSwitch(1)} >
-              预览
-            </View>
+            encounter.map(item => {
+              const { code, date } = item
+              return (
+                <AtList key={`${code}${date}`} >
+                  <AtListItem
+                    title={code}
+                    note={date}
+                    extraText='详细信息'
+                    arrow='right'
+                    onClick={() => this.currentSwitch(1)}
+                  />
+                </AtList>
+              )
+            }
+            )
+
           ) : (
               <View>
                 <AtModal
