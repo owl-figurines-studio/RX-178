@@ -111,8 +111,9 @@ class Verify extends Component {
                 placeholder='请输入电话号码'
                 value={userPhoneNum}
                 onChange={value => this.phoneNumberOnChange(value)}
-              />
-              <AtButton className='sendPhoneNum' formType='submit'>发送验证</AtButton>
+              >
+                <AtButton className='sendPhoneNum' formType='submit'>发送验证</AtButton>
+              </AtInput>
             </AtForm>
             <AtForm
               onSubmit={this.verifyok}

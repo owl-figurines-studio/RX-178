@@ -17,7 +17,7 @@ export async function queryOCR(params) {
 export async function createOCR(params) {
   const { arg, fields } = params
   const query = `mutation{
-    createOcr(input:{${getArguments(arg, true)}}){
+    createOcr(input:${getArguments(arg, true)}){
       ocr{${fields.join(",")}}
     }
   }`

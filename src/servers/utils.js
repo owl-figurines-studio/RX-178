@@ -20,12 +20,33 @@ export const pageToLogin = () => {
 
 export const getArguments = (arg, isInput = false) => {
   let argString = ""
-  if (Object.keys(arg).length > 0) {
+  if (isInput) {
+    argString = objToString(arg)
+  } else {
     Object.keys(arg).forEach(key => {
       argString = `${argString} ${key}:"${arg[key]}"`
     })
-    argString = isInput ? argString : `(${argString})`
+    argString = `(${argString})`
   }
   return argString
 }
+
+export const objToString = (obj) => {
+  let str = ''
+  if (typeof (obj) === 'string') {
+    str = `"${obj}"`
+  } else if (Array.isArray(obj)) {
+    str = `["${obj.join('","')}"]`
+  } else if (Object.keys(obj).length > 0) {
+    Object.keys(obj).forEach(key => {
+      const children = objToString(obj[key])
+      str = `${str}${key}:${children},`
+    })
+    str = `{${str}}`
+  } else {
+    str = `${obj}`
+  }
+  return str
+}
+
 

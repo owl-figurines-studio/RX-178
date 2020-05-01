@@ -140,7 +140,7 @@ class Observation extends Component {
       title: '元数据',
     }
 
-    const encounter = [ { code:'血常规', date:'2000-01-01' } ]
+    const encounter = [ { code:'血气分析', date:'2020-01-01' }, { code:'凝血功能', date:'2020-02-01' } ]
 
     return (
       <BasicPage navBarProps={navBarProps} >
@@ -222,7 +222,7 @@ class Observation extends Component {
                     <View className='at-row'>
                       <View className={classNames('at-col', 'at-col-3', styles.title)} >来源：</View>
                       <View className={classNames('at-col', 'at-col-8', styles.editItem)} >
-                        <EditDate value='供应商' />
+                        <EditField value='自我报告' />
                       </View>
                     </View>
                   </AtAccordion>

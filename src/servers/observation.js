@@ -2,10 +2,10 @@ import Taro from '@tarojs/taro'
 import request from './http'
 import { getArguments } from './utils'
 
-export async function queryPatient(params) {
+export async function queryObservation(params) {
   const { arg, fields } = params
   const query = `query{
-    patient${getArguments(arg)}{
+    observation${getArguments(arg)}{
       edges {
         node {${fields.join(",")}}
       }
@@ -14,21 +14,21 @@ export async function queryPatient(params) {
   return request.post('graphql', { data: { query } })
 }
 
-export async function createPatient(params) {
+export async function createObservation(params) {
   const { arg, fields } = params
   const query = `mutation{
-    createPatient(input:${getArguments(arg, true)}){
-      ocr{${fields.join(",")}}
+    createObservation(input:${getArguments(arg, true)}){
+      observation{${fields.join(",")}}
     }
   }`
   return request.post('graphql', { data: { query } })
 }
 
-export async function updatePatient(params) {
+export async function updateObservation(params) {
   const { arg, fields } = params
   const query = `mutation{
-    updatePatient(input:${getArguments(arg, true)}){
-      patient{${fields.join(",")}}
+    updateObservation(input:${getArguments(arg, true)}){
+      observation{${fields.join(",")}}
     }
   }`
   return request.post('graphql', { data: { query } })

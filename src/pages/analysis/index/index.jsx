@@ -1,7 +1,8 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, Navigator } from '@tarojs/components'
+import { View } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import BasicPage from 'src/containers/BasicPage'
+import { AtList, AtListItem } from "taro-ui"
 import { router } from 'src/utils/router'
 
 @connect(({ user }) => {
@@ -23,7 +24,10 @@ class Analysis extends Component {
 
   componentDidHide() { }
 
-
+  navTo = path => {
+    const route = router(path)
+    Taro.navigateTo({ url: route })
+  }
 
   render() {
 
@@ -34,7 +38,15 @@ class Analysis extends Component {
     return (
       <BasicPage navBarProps={navBarProps} >
         <View >
-          <Navigator url={router('index')} >用户模块</Navigator>
+          <AtList>
+            <AtListItem
+              title='糖尿病预测'
+              note='以血糖、胰岛素、BMI系数、年龄为参数进行糖尿病预测'
+              arrow='right'
+              iconInfo={{ size: 25, color: '#78A4FA', value: 'calendar', }}
+              onClick={() => this.navTo("analysis/diabetes")}
+            />
+          </AtList>
         </View>
       </BasicPage>
     )

@@ -14,6 +14,10 @@ class Management extends Component {
     super(props);
   }
 
+  componentDidMount(){
+    Taro.atMessage({message: '登录成功', type: 'success'})
+  }
+
   componentWillReceiveProps(nextProps) {
     console.log(this.props, nextProps)
   }
@@ -54,7 +58,7 @@ class Management extends Component {
               onClick={() => this.navTo("management/origin")}
             />
             <AtListItem
-              title='个人观察和护理信息'
+              title='观察和护理信息'
               arrow='right'
               iconInfo={{ size: 25, color: '#FF4949', value: 'bookmark', }}
               onClick={() => this.navTo("management/observation")}

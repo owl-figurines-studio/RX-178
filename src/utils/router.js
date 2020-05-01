@@ -48,6 +48,10 @@ export const routes = [
     path: 'analysis/index',
     component: '/analysis/index/index'
   },
+  {
+    path: 'analysis/diabetes',
+    component: '/analysis/diabetes/index'
+  },
   // 管理
   {
     path: 'management',

@@ -39,6 +39,7 @@ class App extends Component {
       'pages/acquisition/image/index',
       'pages/acquisition/imagePreview/index',
       'pages/analysis/index/index',
+      'pages/analysis/diabetes/index',
       'pages/management/index/index',
       'pages/management/origin/index',
       'pages/management/patient/index',

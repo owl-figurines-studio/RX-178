@@ -1,6 +1,7 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, Button, ScrollView, Text, MovableArea, MovableView, Image } from '@tarojs/components'
+import { Picker, View, ScrollView, Text, MovableArea, MovableView, Image } from '@tarojs/components'
 import {
+  AtButton,
   AtFloatLayout,
   AtTabs,
   AtTabsPane,
@@ -20,9 +21,12 @@ import BasicPage from 'src/containers/BasicPage'
 import { router } from 'src/utils/router'
 import styles from './index.module.less'
 
-@connect(({ acquisition, ocr, loading }) => {
+@connect(({ user, acquisition, ocr, loading, encounter, observation }) => {
   const { isNeedOCR, uploadID, ocrResult, ocrID } = acquisition
   const { currentOCRresult, ocrRecord } = ocr
+  const { encounters, currentEncounter } = encounter
+  const { observations, currentObservation } = observation
+  const { patientInfo } = user
   return {
     isNeedOCR,
     uploadID,
@@ -30,6 +34,13 @@ import styles from './index.module.less'
     currentOCRresult,
     ocrRecord,
     ocrID,
+    patientInfo,
+    encounters,
+    currentEncounter,
+    observations,
+    currentObservation,
+    encounterLoading: loading.effects['encounter/createEncounter'],
+    observationLoading: loading.effects['observation/createObservation'],
     ocrLoading: loading.effects['ocr/createOCR'],
     queryOCRloading: loading.effects['ocr/queryOCR'],
   }
@@ -49,12 +60,13 @@ class Acquisition extends Component {
       isDataListOpen: false,
       switchOCRrecordID: null,
       currentRecordImage: null,
+      encounterCode: null,
+      period: "",
     }
   }
 
   componentDidMount() {
     const { isNeedOCR } = this.props
-    console.log(isNeedOCR)
     if (isNeedOCR) {
       this.ocr()
       this.openOCRtabs
@@ -95,6 +107,8 @@ class Acquisition extends Component {
     })
     this.openOCRtabs()
   }
+
+
 
   swichTabs = value => {
     if (value === 1) {
@@ -214,6 +228,66 @@ class Acquisition extends Component {
     this.swichTabs(0)
   }
 
+  createEncounter = () => {
+    const { dispatch } = this.props
+    const { encounterCode, period } = this.state
+    if (encounterCode) {
+      dispatch({
+        type: 'encounter/createEncounter',
+        payload: {
+          arg: {
+            classmodel: {
+              code: encounterCode,
+            },
+            period,
+          },
+          fields: ['id', 'classmodel{code}'],
+        }
+      }).then(() => this.createObservations())
+    }
+  }
+
+  createObservations = () => {
+    const { dataList } = this.state
+    const { patientInfo, currentEncounter, dispatch } = this.props
+    const { id: observationSubject } = patientInfo
+    const { id: observationEncounter } = currentEncounter
+    if (observationEncounter && observationSubject) {
+      const observationParameter = dataList.map(item => {
+        return {
+          arg: {
+            subject: {
+              reference: observationSubject
+            },
+            encounter: {
+              reference: observationEncounter
+            },
+            code: {
+              text: item.key
+            },
+            valueQuantity: {
+              value: item.value
+            }
+          },
+          fields: [
+            'subject{reference}',
+            'encounter{reference}',
+            'code{text}',
+            'valueQuantity{value}',
+          ],
+        }
+      })
+      console.log(observationParameter)
+      dispatch({
+        type: 'observation/createObservations',
+        payload: {
+          observationParameter,
+        }
+      })
+    }
+  }
+
+
   render() {
     const { currentOCRresult, ocrRecord, ocrLoading, queryOCRloading } = this.props
     const {
@@ -227,6 +301,8 @@ class Acquisition extends Component {
       dataList,
       isDataListOpen,
       currentRecordImage,
+      encounterCode,
+      period
     } = this.state
     const navBarProps = {
       title: '数据获取',
@@ -243,7 +319,7 @@ class Acquisition extends Component {
               />
             </AtModalContent>
             <AtModalAction>
-              <Button onClick={this.copyDetal} >复制</Button><Button onClick={this.ocrDetailClose} >关闭</Button>
+              <AtButton onClick={this.copyDetal} >复制</AtButton><AtButton onClick={this.ocrDetailClose} >关闭</AtButton>
             </AtModalAction>
           </AtModal>
 
@@ -252,14 +328,21 @@ class Acquisition extends Component {
               <Image className={styles.modalImage} src={currentRecordImage} mode='aspectFit' />
             </AtModalContent>
             <AtModalAction>
-              <Button onClick={this.switchCurrentOCRresult} >切换此次结果</Button><Button onClick={this.historyConfirmClose} >关闭</Button>
+              <AtButton onClick={this.switchCurrentOCRresult} >切换此次结果</AtButton><AtButton onClick={this.historyConfirmClose} >关闭</AtButton>
             </AtModalAction>
           </AtModal>
 
           <AtAccordion
             open
             title='基本信息'
-          ></AtAccordion>
+          >
+            <AtInput title='报告名称' onChange={value => { this.setState({ encounterCode: value }) }} value={encounterCode} />
+            <Picker mode='date' onChange={event => { this.setState({ period: event.target.value }) }}>
+              <View className='at-input'>
+                获取时间：{period}
+              </View>
+            </Picker>
+          </AtAccordion>
           <AtAccordion
             open={isDataListOpen}
             onClick={this.clickDataList}
@@ -280,7 +363,7 @@ class Acquisition extends Component {
                           <AtInput value={item.key} onChange={value => this.dataChange(index, 'key', value)} />
                         </View>
                         <View className='at-col at-col-5'>
-                          <AtInput value={item.value} onChange={value => this.dataChange(index, 'value', value)} />
+                          <AtInput type='number' value={item.value} onChange={value => this.dataChange(index, 'value', value)} />
                         </View>
                         {
                           dataList.length > 1 ? (
@@ -296,10 +379,10 @@ class Acquisition extends Component {
               }
               <View className='at-row'>
                 <View className='at-col'>
-                  <Button onClick={this.addData} ><AtIcon value='add' />新增</Button>
+                  <AtButton onClick={this.addData} ><AtIcon value='add' />新增</AtButton>
                 </View>
                 <View className='at-col'>
-                  <Button onClick={this.initData} ><AtIcon value='close' />清空</Button>
+                  <AtButton onClick={this.initData} ><AtIcon value='close' />清空</AtButton>
                 </View>
               </View>
             </View>
@@ -311,8 +394,8 @@ class Acquisition extends Component {
               direction='all' onTouchStart={this.fabTouchStart}
               onTouchEnd={this.fabTouchEnd}
               onClick={this.fabOnClick}
-              x='25'
-              y='25'
+              x='100'
+              y='10'
             >
               <View className={styles.fabButton} style={{ opacity: fabOpacity }} >
                 <AtFab size='small' >
@@ -324,6 +407,7 @@ class Acquisition extends Component {
                   <View className={styles.fabMenu} >
                     <AtIcon className={styles.menuLeft} value='camera' size={20} onClick={this.navToImageAcquisition} />
                     <AtIcon className={styles.menuTop} value='bullet-list' size={20} onClick={this.openOCRtabs} />
+                    <AtIcon className={styles.menuRight} value='external-link' size={20} onClick={this.createEncounter} />
                   </View>
                 ) : null
               }

@@ -7,7 +7,7 @@ import BasicPage from 'src/containers/BasicPage'
 import EditField from 'src/components/editField'
 import EditDate from 'src/components/editDate'
 import EditSelector from 'src/components/editSelector'
-// import { router } from 'src/utils/router'
+import { changedFieldKeys } from 'src/utils/common'
 import styles from './index.module.less'
 
 const genderMap = [{ cn: '男', en: 'male' }, { cn: '女', en: 'female' }, { cn: '未知', en: 'unknown' }]
@@ -23,20 +23,17 @@ class Patient extends Component {
       isEdit: false,
       name: "",
       birthDate: "2000-01-01",
-      gender: 0,
+      gender: 'male',
+      telecom: "",
       isOpenUpdateModal: false,
+      changedFields: []
     }
   }
 
   componentDidMount() {
-    const { dispatch, userPhone } = this.props
-    dispatch({
-      type: 'user/queryPatient',
-      payload: {
-        arg: { telecom: userPhone },
-        fields: ['name', 'gender', 'birthDate',],
-      },
-    })
+    const { patientInfo } = this.props
+    const { name, gender, birthDate, telecom } = patientInfo
+    this.setState({ name, gender, birthDate, telecom })
   }
 
   componentWillReceiveProps() { }
@@ -55,7 +52,7 @@ class Patient extends Component {
 
   onGenderChange = event => {
     this.setState({
-      gender: event.target.value
+      gender: genderMap[event.target.value].en
     })
   }
 
@@ -65,10 +62,32 @@ class Patient extends Component {
     })
   }
 
+  onTelecomChange = value => {
+    this.setState({
+      telecom: value
+    })
+  }
+
   onEdit = () => {
-    const { isEdit } = this.state
+    const { patientInfo } = this.props
+    const { isEdit, name, birthDate, gender, telecom } = this.state
+
     if (isEdit) {
-      this.openUpdateModal()
+      const changedFields = changedFieldKeys(
+        {
+          ...patientInfo
+        },
+        {
+          name,
+          birthDate,
+          gender,
+          telecom,
+        }
+      )
+      this.setState({ changedFields })
+      if (changedFields.length > 0) {
+        this.openUpdateModal()
+      }
     }
     this.setState({
       isEdit: !isEdit
@@ -89,15 +108,45 @@ class Patient extends Component {
 
   update = () => {
     this.closeUpdateModal()
-    console.log("update")
+    this.updatePatient()
+  }
+
+  updatePatient = () => {
+    const { dispatch, patientInfo: { id } } = this.props
+    const { name, gender, birthDate, telecom } = this.state
+    const nameArray = [name]
+    dispatch({
+      type: 'user/updatePatient',
+      payload: {
+        arg: { id, name: nameArray, gender, birthDate, telecom, },
+        fields: ['id', 'name', 'gender', 'birthDate', 'telecom'],
+      },
+    })
+  }
+
+  queryPatient = arg => {
+    const { dispatch } = this.props
+    const { changedFields } = this.state
+    if (changedFields.length > 0) {
+      dispatch({
+        type: 'user/queryPatient',
+        payload: {
+          arg,
+          fields: ['id', 'name', 'gender', 'birthDate', 'telecom'],
+        },
+      })
+    }
+
   }
 
   render() {
-    const { name, gender, birthDate, isEdit, isOpenUpdateModal } = this.state
+
+    const { name, gender, birthDate, isEdit, telecom, isOpenUpdateModal } = this.state
     const navBarProps = {
       title: '基本信息',
     }
     const genderRange = genderMap.map(item => item.cn)
+
     return (
       <BasicPage navBarProps={navBarProps} >
 
@@ -113,13 +162,13 @@ class Patient extends Component {
         />
 
         <View className={styles.header} >
-          <View className={classNames('at-row', styles.buttonArea)} >
+          <View className={classNames('at-row')} >
             <View className={classNames('at-col', 'at-col-3', 'at-col__offset-9')} >
               <AtTag
                 size='normal'
                 circle
                 onClick={this.onEdit}
-                active={isEdit}
+                active
               >
                 {isEdit ? ('完成') : ('编辑')}
               </AtTag>
@@ -142,9 +191,16 @@ class Patient extends Component {
           <View className='at-row'>
             <View className={classNames('at-col', 'at-col-3', styles.title)} >性别：</View>
             <View className={classNames('at-col', 'at-col-8', styles.editItem)} >
-              <EditSelector isEdit={isEdit} value={gender} range={genderRange} onChange={this.onGenderChange} />
+              <EditSelector isEdit={isEdit} value={genderMap.findIndex(item => item.en === gender)} range={genderRange} onChange={this.onGenderChange} />
             </View>
           </View>
+          <View className='at-row'>
+            <View className={classNames('at-col', 'at-col-3', styles.title)} >联系方式：</View>
+            <View className={classNames('at-col', 'at-col-8', styles.editItem)} >
+              <EditField isEdit={isEdit} value={telecom} onChange={this.onTelecomChange} />
+            </View>
+          </View>
+
         </View>
       </BasicPage>
     )

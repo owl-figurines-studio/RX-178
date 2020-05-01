@@ -20,8 +20,8 @@ const tabBarRoute = [
 ]
 
 const mapStateToProps = ({ user }) => {
-  const { userStateCode } = user
-  return { userStateCode }
+  const { userStateCode, userPhone, patientInfo } = user
+  return { userStateCode, userPhone, patientInfo }
 }
 
 @connect(mapStateToProps)
@@ -41,10 +41,25 @@ class BasicPage extends Component {
   }
 
   componentDidMount() {
+    const { userPhone, patientInfo } = this.props
     this.initCurrentTabBar()
     if (!Taro.getStorageSync('RX-178')) {
       this.login()
     }
+    if (userPhone && !patientInfo) {
+      this.queryPatient({ telecom: userPhone })
+    }
+  }
+
+  queryPatient = arg => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'user/queryPatient',
+      payload: {
+        arg,
+        fields: ['id', 'name', 'gender', 'birthDate', 'telecom'],
+      },
+    })
   }
 
 
@@ -122,7 +137,7 @@ class BasicPage extends Component {
 
   initCurrentTabBar = () => {
     const url = getCurrentPageUrl()
-    const current = tabBarRoute.findIndex(route => router(route) === url)
+    const current = tabBarRoute.findIndex(route => url.includes(route))
     this.setState({
       currentTabBar: current >= 0 ? current : -1
     })

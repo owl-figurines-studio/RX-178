@@ -16,5 +16,12 @@ export const getCurrentPageUrl = () => {
   return url
 }
 
-
+export const changedFieldKeys = (prevFields, nextFields) => {
+  const fieldKeys = []
+  Object.keys(nextFields).forEach(key => {
+    if (nextFields[key] !== prevFields[key])
+      fieldKeys.push(key)
+  })
+  return fieldKeys
+}
 
