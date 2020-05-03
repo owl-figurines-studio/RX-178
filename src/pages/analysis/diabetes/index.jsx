@@ -14,11 +14,13 @@ import BasicPage from 'src/containers/BasicPage'
 import { router } from 'src/utils/router'
 import styles from './index.module.less'
 
+const diabetesResultMap = { "0": "阴性", "1": "阳性" }
 
-
-@connect(({ analysis }) => {
+@connect(({ analysis, user, observation }) => {
   const { diabetesResult } = analysis
-  return { diabetesResult }
+  const { userPhone } = user
+  const { observations } = observation
+  return { diabetesResult, userPhone, observations }
 })
 class diabetes extends Component {
   constructor(props) {
@@ -32,15 +34,14 @@ class diabetes extends Component {
       height: null,
       bloodPressure: null,
       resultAccordion: false,
-      isObservationFloatOpen: false
+      isObservationFloatOpen: false,
+      observationData: [],
     }
   }
 
   componentDidMount() { }
 
-  componentWillReceiveProps(nextProps) {
-    console.log(this.props, nextProps)
-  }
+  componentWillReceiveProps() { }
 
   componentWillUnmount() { }
 
@@ -66,7 +67,7 @@ class diabetes extends Component {
     })
   }
 
-  forecast = () => {
+  submit = () => {
     this.diabetesPredic()
     this.setState({
       formDisabled: true,
@@ -74,15 +75,23 @@ class diabetes extends Component {
   }
 
   edit = () => {
+    const { dispatch } = this.props
     this.setState({
       formDisabled: false,
     })
+    dispatch({
+      type: "analysis/saveDiabetesResult",
+      payload: { diabetesResult: null }
+    })
   }
   resultAccordionSwitch = (value = null) => {
+    const { diabetesResult } = this.props
     const { resultAccordion } = this.state
-    this.setState({
-      resultAccordion: value ? value : !resultAccordion
-    })
+    if (typeof (diabetesResult) === 'string') {
+      this.setState({
+        resultAccordion: value ? value : !resultAccordion
+      })
+    }
   }
 
   observationFloatSwitch = (value = null) => {
@@ -92,7 +101,8 @@ class diabetes extends Component {
     })
   }
 
-  openObservationFloat = () => {
+  openObservationFloat = code => {
+    this.queryObservationByCode(code)
     this.observationFloatSwitch(true)
   }
 
@@ -102,20 +112,46 @@ class diabetes extends Component {
   }
 
   diabetesPredic = () => {
-    const { dispatch } = this.props
+    const { dispatch, userPhone } = this.props
+    const { age, glucose, insulin, weight, height, bloodPressure, } = this.state
     dispatch({
       type: 'analysis/diabetesPredic',
       payload: {
-        Age: 32,
-        Glucose: 1830,
-        Insulin: 0,
-        weight: 75.5,
-        height: 180,
-        BloodPressure: 64,
-        phone:'18258232093',
+        Age: age,
+        Glucose: glucose,
+        Insulin: insulin,
+        weight,
+        height,
+        BloodPressure: bloodPressure,
+        phone: userPhone,
       }
     })
   }
+
+  queryObservationByCode = code => {
+    const { dispatch } = this.props
+    dispatch({
+      type: "observation/queryObservation",
+      payload: {
+        arg: {},
+        fields: [
+          'id',
+          'code{text}',
+          'encounter{reference}',
+          'subject{reference}',
+          'valueQuantity{value,unit}'
+        ],
+      }
+    }).then(() => {
+      const { observations } = this.props
+      const observationData = observations.filter(item => {
+        const { code: { text } } = item
+        return text && (text === code)
+      })
+      this.setState({ observationData })
+    })
+  }
+
 
 
   render() {
@@ -130,10 +166,11 @@ class diabetes extends Component {
       bloodPressure,
       resultAccordion,
       isObservationFloatOpen,
+      observationData,
     } = this.state
 
-    const { result = '阳性' } = this.props
-    const { observationData = [{ value: 140, code: '体检', date: '2000-01-01' }, { value: 132, code: '年检', date: '2001-02-01' }] } = this.props
+    const { diabetesResult } = this.props
+    const result = typeof (diabetesResult) === 'string' ? diabetesResultMap[diabetesResult] : null
 
     const navBarProps = {
       title: '糖尿病预测',
@@ -146,12 +183,12 @@ class diabetes extends Component {
           <AtList>
             {
               observationData.map((item, index) => {
-                const { value, code, date } = item
+                const { valueQuantity: { value, unit }, code: { text }, } = item
                 return (
                   <AtListItem
-                    key={`${date}${index}`}
-                    title={`${value} mmHg`}
-                    note={`${date} ${code}`}
+                    key={`${text}${index}`}
+                    title={`${value} ${unit}`}
+                    note={`${text}`}
                     onClick={() => this.choiceData('bloodPressure', value)}
                   />
                 )
@@ -179,7 +216,7 @@ class diabetes extends Component {
               clear
               onChange={value => { this.stateChange('glucose', value) }}
             >
-              <Button onClick={this.openObservationFloat} >检查数据</Button>
+              <Button onClick={() => this.openObservationFloat("血糖")} >检查数据</Button>
             </AtInput>
             <AtInput
               disabled={formDisabled}
@@ -190,7 +227,7 @@ class diabetes extends Component {
               clear
               onChange={value => { this.stateChange('insulin', value) }}
             >
-              <Button onClick={this.openObservationFloat} >检查数据</Button>
+              <Button onClick={() => this.openObservationFloat("胰岛素")} >检查数据</Button>
             </AtInput>
             <AtInput
               disabled={formDisabled}
@@ -220,13 +257,13 @@ class diabetes extends Component {
               clear
               onChange={value => { this.stateChange('bloodPressure', value) }}
             >
-              <Button onClick={this.openObservationFloat} >检查数据</Button>
+              <Button onClick={() => this.openObservationFloat("血压")} >检查数据</Button>
             </AtInput>
           </View>
 
           <View className='at-row at-row__justify--around'>
             <View className='at-col at-col-5' >
-              <Button onClick={this.forecast} >提交</Button>
+              <Button onClick={this.submit} >提交</Button>
             </View>
             <View className='at-col at-col-5' >
               {
@@ -248,7 +285,7 @@ class diabetes extends Component {
             <View className={classNames('at-row', 'at-row__justify--center', styles.result)} >
               <View className={classNames('at-col', 'at-col-3', styles.resultTitle)} >预测结果：</View>
               <View className='at-col at-col-3' >
-                <AtTag circle active>阳性</AtTag>
+                <AtTag circle active>{result}</AtTag>
               </View>
             </View>
           </AtAccordion>)

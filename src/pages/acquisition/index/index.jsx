@@ -254,19 +254,21 @@ class Acquisition extends Component {
     const { id: observationEncounter } = currentEncounter
     if (observationEncounter && observationSubject) {
       const observationParameter = dataList.map(item => {
+        const { key, value, unit } = item
         return {
           arg: {
             subject: {
-              reference: observationSubject
+              reference: observationSubject,
             },
             encounter: {
-              reference: observationEncounter
+              reference: observationEncounter,
             },
             code: {
-              text: item.key
+              text: key,
             },
             valueQuantity: {
-              value: item.value
+              value: parseFloat(value) ,
+              unit,
             }
           },
           fields: [
@@ -350,8 +352,9 @@ class Acquisition extends Component {
           >
             <View>
               <View className='at-row'>
-                <View className='at-col at-col-5'  ><View style={{ 'marginLeft': '32rpx' }}>项目名称</View></View>
-                <View className='at-col at-col-5'  ><View style={{ 'marginLeft': '32rpx' }}>检查结果</View></View>
+                <View className='at-col at-col-4'  ><View style={{ 'marginLeft': '32rpx' }}>项目名称</View></View>
+                <View className='at-col at-col-3'  ><View style={{ 'marginLeft': '32rpx' }}>检查结果</View></View>
+                <View className='at-col at-col-3'  ><View style={{ 'marginLeft': '32rpx' }}>单位</View></View>
                 <View className='at-col at-col-2'>删除</View>
               </View>
               {
@@ -359,11 +362,14 @@ class Acquisition extends Component {
                   (item, index) => {
                     return (
                       <View className='at-row' key={`${item}_${index}`}>
-                        <View className='at-col at-col-5'>
+                        <View className='at-col at-col-4'>
                           <AtInput value={item.key} onChange={value => this.dataChange(index, 'key', value)} />
                         </View>
-                        <View className='at-col at-col-5'>
+                        <View className='at-col at-col-3'>
                           <AtInput type='number' value={item.value} onChange={value => this.dataChange(index, 'value', value)} />
+                        </View>
+                        <View className='at-col at-col-3'>
+                          <AtInput value={item.unit} onChange={value => this.dataChange(index, 'unit', value)} />
                         </View>
                         {
                           dataList.length > 1 ? (

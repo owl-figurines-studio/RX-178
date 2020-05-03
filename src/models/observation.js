@@ -10,9 +10,10 @@ export default {
   effects: {
     *queryObservation({ payload }, { call, put }) {
       const { data } = yield call(observationServices.queryObservation, payload)
-      const { ocr: { edges } } = data
+      const { observation: { edges } } = data
       const observations = edges.map(item => item.node)
       yield put({ type: 'saveObservations', payload: { observations } })
+      return observations
     },
     *createObservations({ payload }, { select, put }) {
       const { observationParameter } = payload

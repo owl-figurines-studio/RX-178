@@ -26,7 +26,7 @@ export const getArguments = (arg, isInput = false) => {
     Object.keys(arg).forEach(key => {
       argString = `${argString} ${key}:"${arg[key]}"`
     })
-    argString = `(${argString})`
+    argString = argString.length > 0 ? `(${argString})` : ""
   }
   return argString
 }
