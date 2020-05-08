@@ -1,6 +1,6 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Button } from '@tarojs/components'
-import { AtTag, AtModal, AtAccordion, AtIcon, AtList, AtListItem, AtActivityIndicator } from 'taro-ui'
+import { AtTag, AtModal, AtAccordion, AtIcon, AtList, AtListItem, AtActivityIndicator, AtRadio } from 'taro-ui'
 import { connect } from '@tarojs/redux'
 import classNames from 'classnames'
 import BasicPage from 'src/containers/BasicPage'
@@ -49,6 +49,7 @@ class Observation extends Component {
       updateList: [],
       createList: [],
       changedEncounter: {},
+      isEncounterEdit: false,
     }
   }
 
@@ -446,32 +447,54 @@ class Observation extends Component {
                 <AtActivityIndicator mode='center' content='加载中' size='50px' />
               ) : (
                   <View>
-                    {
-                      encounters.length > 0 ? (
-                        <View>
-                          {
-                            encounters.map(item => {
-                              const { classmodel: { code }, period } = item
-                              return (
-                                <AtList key={`${code}${period}`} >
-                                  <AtListItem
-                                    title={code}
-                                    note={period}
-                                    extraText='详细信息'
-                                    arrow='right'
-                                    onClick={() => this.detail(item)}
-                                  />
-                                </AtList>
-                              )
-                            })
-                          }
+                    <View className={styles.header} >
+                      <View className={classNames('at-row')} >
+                        <View className={classNames('at-col', 'at-col-1')} onClick={() => this.currentSwitch(0)} >
+                          <AtIcon value='chevron-left' color='#7093EA' />
                         </View>
-                      ) : (
-                          <View className={styles.empty} >
-                            <View>无数据</View>
+                        <View className={classNames('at-col', 'at-col-1', styles.return)} onClick={() => this.currentSwitch(0)} >
+                          返回
+                        </View>
+                        <View className={classNames('at-col', 'at-col-3', 'at-col__offset-7')} >
+                          <AtTag
+                            size='normal'
+                            circle
+                            onClick={this.onEdit}
+                            active
+                          >
+                            {isEdit ? ('完成') : ('编辑')}
+                          </AtTag>
+                        </View>
+                      </View>
+                    </View>
+                    <View className={styles.content} >
+                      {
+                        encounters.length > 0 ? (
+                          <View>
+                            {
+                              encounters.map(item => {
+                                const { classmodel: { code }, period } = item
+                                return (
+                                  <AtList key={`${code}${period}`} >
+                                    <AtListItem
+                                      title={code}
+                                      note={period}
+                                      extraText='详细信息'
+                                      arrow='right'
+                                      onClick={() => this.detail(item)}
+                                    />
+                                  </AtList>
+                                )
+                              })
+                            }
                           </View>
-                        )
-                    }
+                        ) : (
+                            <View className={styles.empty} >
+                              <View>无数据</View>
+                            </View>
+                          )
+                      }
+                    </View>
                   </View>)}
             </View>
           ) : (
@@ -488,109 +511,110 @@ class Observation extends Component {
                 />
                 {updateEncounterLoading || queryObservationLoading || updateObservationLoading || createObservationLoading ? (
                   <AtActivityIndicator mode='center' content='加载中' size='50px' />
-                ) : (<View>
-                  <View className={styles.header} >
-                    <View className={classNames('at-row')} >
-                      <View className={classNames('at-col', 'at-col-1')} onClick={() => this.currentSwitch(0)} >
-                        <AtIcon value='chevron-left' color='#7093EA' />
-                      </View>
-                      <View className={classNames('at-col', 'at-col-1', styles.return)} onClick={() => this.currentSwitch(0)} >
-                        返回
+                ) : (
+                    <View>
+                      <View className={styles.header} >
+                        <View className={classNames('at-row')} >
+                          <View className={classNames('at-col', 'at-col-1')} onClick={() => this.currentSwitch(0)} >
+                            <AtIcon value='chevron-left' color='#7093EA' />
+                          </View>
+                          <View className={classNames('at-col', 'at-col-1', styles.return)} onClick={() => this.currentSwitch(0)} >
+                            返回
                     </View>
-                      <View className={classNames('at-col', 'at-col-3', 'at-col__offset-7')} >
-                        <AtTag
-                          size='normal'
-                          circle
-                          onClick={this.onEdit}
-                          active
+                          <View className={classNames('at-col', 'at-col-3', 'at-col__offset-7')} >
+                            <AtTag
+                              size='normal'
+                              circle
+                              onClick={this.onEdit}
+                              active
+                            >
+                              {isEdit ? ('完成') : ('编辑')}
+                            </AtTag>
+                          </View>
+                        </View>
+                      </View>
+                      <View className={styles.content}>
+                        <AtAccordion
+                          open={isEncounterOpen}
+                          onClick={this.encounterSwitch}
+                          title='基本信息'
                         >
-                          {isEdit ? ('完成') : ('编辑')}
-                        </AtTag>
-                      </View>
-                    </View>
-                  </View>
-                  <View className={styles.content}>
-                    <AtAccordion
-                      open={isEncounterOpen}
-                      onClick={this.encounterSwitch}
-                      title='基本信息'
-                    >
-                      <View className='at-row'>
-                        <View className={classNames('at-col', 'at-col-3', styles.title)} >检查名称：</View>
-                        <View className={classNames('at-col', 'at-col-8', styles.editItem)} >
-                          <EditField isEdit={isEdit} value={currentEncounterCode} onChange={this.onCurrentEncounterCodeChange} />
-                        </View>
-                      </View>
-                      <View className='at-row'>
-                        <View className={classNames('at-col', 'at-col-3', styles.title)} >检查时间：</View>
-                        <View className={classNames('at-col', 'at-col-8', styles.editItem)} >
-                          <EditDate isEdit={isEdit} value={currentEncounterPeriod} onChange={this.onCurrentEncounterPeriodChange} />
-                        </View>
-                      </View>
-                      <View className='at-row'>
-                        <View className={classNames('at-col', 'at-col-3', styles.title)} >来源：</View>
-                        <View className={classNames('at-col', 'at-col-8', styles.editItem)} >
-                          <EditField value='自我报告' />
-                        </View>
-                      </View>
-                    </AtAccordion>
-                    <AtAccordion
-                      open={isObservationOpen}
-                      onClick={this.observationSwitch}
-                      title='数据'
-                    >
-                      <View>
-                        <View className='at-row'>
-                          <View className='at-col at-col-4'  ><View style={{ 'marginLeft': '32rpx' }}>项目名称</View></View>
-                          <View className='at-col at-col-3'  ><View style={{ 'marginLeft': '32rpx' }}>检查结果</View></View>
-                          <View className='at-col at-col-3'  ><View style={{ 'marginLeft': '32rpx' }}>单位</View></View>
-                          {
-                            isEdit ? (<View className='at-col at-col-2'>删除</View>) : null
-                          }
-                        </View>
-                        {
-                          dataList.map(
-                            (item, index) => {
-                              return (
-                                <View className='at-row' key={`${item}_${index}`}>
-                                  <View className='at-col at-col-4'>
-                                    <EditField isEdit={isEdit} value={item.key} onChange={value => this.dataChange(index, 'key', value)} />
-                                  </View>
-                                  <View className='at-col at-col-3'>
-                                    <EditField isEdit={isEdit} value={item.value} onChange={value => this.dataChange(index, 'value', value)} />
-                                  </View>
-                                  <View className='at-col at-col-3'>
-                                    <EditField isEdit={isEdit} value={item.unit} onChange={value => this.dataChange(index, 'unit', value)} />
-                                  </View>
-                                  {
-                                    dataList.length > 1 && isEdit ? (
-                                      <View className='at-col at-col-2'>
-                                        <AtIcon onClick={() => this.subtractData(index)} value='subtract-circle' color='red' />
+                          <View className='at-row'>
+                            <View className={classNames('at-col', 'at-col-3', styles.title)} >检查名称：</View>
+                            <View className={classNames('at-col', 'at-col-8', styles.editItem)} >
+                              <EditField isEdit={isEdit} value={currentEncounterCode} onChange={this.onCurrentEncounterCodeChange} />
+                            </View>
+                          </View>
+                          <View className='at-row'>
+                            <View className={classNames('at-col', 'at-col-3', styles.title)} >检查时间：</View>
+                            <View className={classNames('at-col', 'at-col-8', styles.editItem)} >
+                              <EditDate isEdit={isEdit} value={currentEncounterPeriod} onChange={this.onCurrentEncounterPeriodChange} />
+                            </View>
+                          </View>
+                          <View className='at-row'>
+                            <View className={classNames('at-col', 'at-col-3', styles.title)} >来源：</View>
+                            <View className={classNames('at-col', 'at-col-8', styles.editItem)} >
+                              <EditField value='自我报告' />
+                            </View>
+                          </View>
+                        </AtAccordion>
+                        <AtAccordion
+                          open={isObservationOpen}
+                          onClick={this.observationSwitch}
+                          title='数据'
+                        >
+                          <View>
+                            <View className='at-row'>
+                              <View className='at-col at-col-4'  ><View style={{ 'marginLeft': '32rpx' }}>项目名称</View></View>
+                              <View className='at-col at-col-3'  ><View style={{ 'marginLeft': '32rpx' }}>检查结果</View></View>
+                              <View className='at-col at-col-3'  ><View style={{ 'marginLeft': '32rpx' }}>单位</View></View>
+                              {
+                                isEdit ? (<View className='at-col at-col-2'>删除</View>) : null
+                              }
+                            </View>
+                            {
+                              dataList.map(
+                                (item, index) => {
+                                  return (
+                                    <View className='at-row' key={`${item}_${index}`}>
+                                      <View className='at-col at-col-4'>
+                                        <EditField isEdit={isEdit} value={item.key} onChange={value => this.dataChange(index, 'key', value)} />
                                       </View>
-                                    ) : null
-                                  }
-                                </View>
+                                      <View className='at-col at-col-3'>
+                                        <EditField isEdit={isEdit} value={item.value} onChange={value => this.dataChange(index, 'value', value)} />
+                                      </View>
+                                      <View className='at-col at-col-3'>
+                                        <EditField isEdit={isEdit} value={item.unit} onChange={value => this.dataChange(index, 'unit', value)} />
+                                      </View>
+                                      {
+                                        dataList.length > 1 && isEdit ? (
+                                          <View className='at-col at-col-2'>
+                                            <AtIcon onClick={() => this.subtractData(index)} value='subtract-circle' color='red' />
+                                          </View>
+                                        ) : null
+                                      }
+                                    </View>
+                                  )
+                                }
                               )
                             }
-                          )
-                        }
-                        {
-                          isEdit ? (
-                            <View className='at-row'>
-                              <View className='at-col'>
-                                <Button onClick={this.addData} ><AtIcon value='add' />新增</Button>
-                              </View>
-                              <View className='at-col'>
-                                <Button onClick={this.initData} ><AtIcon value='close' />清空</Button>
-                              </View>
-                            </View>
-                          ) : null
-                        }
+                            {
+                              isEdit ? (
+                                <View className='at-row'>
+                                  <View className='at-col'>
+                                    <Button onClick={this.addData} ><AtIcon value='add' />新增</Button>
+                                  </View>
+                                  <View className='at-col'>
+                                    <Button onClick={this.initData} ><AtIcon value='close' />清空</Button>
+                                  </View>
+                                </View>
+                              ) : null
+                            }
 
+                          </View>
+                        </AtAccordion>
                       </View>
-                    </AtAccordion>
-                  </View>
-                </View>)
+                    </View>)
                 }
               </View>
             )
