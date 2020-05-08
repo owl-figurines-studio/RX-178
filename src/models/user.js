@@ -68,6 +68,7 @@ export default {
       yield put({ type: 'saveUserState', payload: { userStateCode } })
     },
     *queryPatient({ payload }, { call, put }) {
+      yield call(delay, 1000);
       const { data } = yield call(patientServices.queryPatient, payload)
       const { patient: { edges } } = data
       const patientInfo = { ...edges[0].node } || {}
@@ -101,4 +102,10 @@ export default {
       return { ...state, patientInfo }
     },
   }
+}
+
+function delay(time) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, time);
+  });
 }

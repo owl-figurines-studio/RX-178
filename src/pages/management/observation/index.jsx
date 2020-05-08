@@ -544,7 +544,9 @@ class Observation extends Component {
                           <View className='at-col at-col-4'  ><View style={{ 'marginLeft': '32rpx' }}>项目名称</View></View>
                           <View className='at-col at-col-3'  ><View style={{ 'marginLeft': '32rpx' }}>检查结果</View></View>
                           <View className='at-col at-col-3'  ><View style={{ 'marginLeft': '32rpx' }}>单位</View></View>
-                          <View className='at-col at-col-2'>删除</View>
+                          {
+                            isEdit ? (<View className='at-col at-col-2'>删除</View>) : null
+                          }
                         </View>
                         {
                           dataList.map(

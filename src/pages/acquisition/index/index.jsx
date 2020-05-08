@@ -267,7 +267,7 @@ class Acquisition extends Component {
               text: key,
             },
             valueQuantity: {
-              value: parseFloat(value) ,
+              value: parseFloat(value),
               unit,
             }
           },
@@ -291,7 +291,14 @@ class Acquisition extends Component {
 
 
   render() {
-    const { currentOCRresult, ocrRecord, ocrLoading, queryOCRloading } = this.props
+    const {
+      currentOCRresult,
+      ocrRecord,
+      ocrLoading,
+      queryOCRloading,
+      encounterLoading,
+      observationLoading,
+    } = this.props
     const {
       isTabsOpen,
       tabsCurrent,
@@ -304,7 +311,7 @@ class Acquisition extends Component {
       isDataListOpen,
       currentRecordImage,
       encounterCode,
-      period
+      period,
     } = this.state
     const navBarProps = {
       title: '数据获取',
@@ -312,6 +319,13 @@ class Acquisition extends Component {
     const tabList = [{ title: 'OCR结果' }, { title: '历史' }]
     return (
       <BasicPage navBarProps={navBarProps} tabBarVisible={!isTabsOpen} >
+        {
+          encounterLoading || observationLoading ? (
+            <View className={styles.loadingBackground} >
+              <AtActivityIndicator mode='center' content='加载中' size='50px' />
+            </View>
+          ) : null
+        }
         <MovableArea className={styles.movableArea}>
           <AtModal isOpened={isOCRmodalOpen}>
             <AtModalContent>
