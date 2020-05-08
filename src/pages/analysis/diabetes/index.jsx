@@ -36,6 +36,7 @@ class diabetes extends Component {
       resultAccordion: false,
       isObservationFloatOpen: false,
       observationData: [],
+      floatTitle:"",
     }
   }
 
@@ -102,6 +103,7 @@ class diabetes extends Component {
   }
 
   openObservationFloat = code => {
+    this.setState({floatTitle:`${code}历史`})
     this.queryObservationByCode(code)
     this.observationFloatSwitch(true)
   }
@@ -167,6 +169,7 @@ class diabetes extends Component {
       resultAccordion,
       isObservationFloatOpen,
       observationData,
+      floatTitle,
     } = this.state
 
     const { diabetesResult } = this.props
@@ -179,7 +182,7 @@ class diabetes extends Component {
     return (
       <BasicPage navBarProps={navBarProps} tabBarVisible={!isObservationFloatOpen} >
 
-        <AtFloatLayout isOpened={isObservationFloatOpen} title='血压历史数据' onClose={() => this.observationFloatSwitch(false)} >
+        <AtFloatLayout isOpened={isObservationFloatOpen} title={floatTitle} onClose={() => this.observationFloatSwitch(false)} >
           <AtList>
             {
               observationData.map((item, index) => {

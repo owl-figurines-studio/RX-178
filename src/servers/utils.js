@@ -24,7 +24,11 @@ export const getArguments = (arg, isInput = false) => {
     argString = objToString(arg)
   } else {
     Object.keys(arg).forEach(key => {
-      argString = `${argString} ${key}:"${arg[key]}"`
+      if (typeof (arg[key]) === 'boolean') {
+        argString = `${argString} ${key}:${arg[key]}`
+      } else {
+        argString = `${argString} ${key}:"${arg[key]}"`
+      }
     })
     argString = argString.length > 0 ? `(${argString})` : ""
   }

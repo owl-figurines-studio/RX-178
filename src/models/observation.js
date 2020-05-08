@@ -9,11 +9,12 @@ export default {
   },
   effects: {
     *queryObservation({ payload }, { call, put }) {
+      yield call(delay, 1000);
       const { data } = yield call(observationServices.queryObservation, payload)
       const { observation: { edges } } = data
-      const observations = edges.map(item => item.node)
+      const observations = edges.map(item => item.node) || []
       yield put({ type: 'saveObservations', payload: { observations } })
-      return observations
+
     },
     *createObservations({ payload }, { select, put }) {
       const { observationParameter } = payload
@@ -42,10 +43,10 @@ export default {
       }
       yield put({ type: 'saveObservations', payload: { observations: observations } })
     },
-    *updateObservation({ payload }, { call }) {
+    *updateObservation({ payload }, { call, put }) {
       const { data } = yield call(observationServices.updateObservation, payload)
       const { updateObservation: { observation } } = data
-      return observation
+      yield put({ type: 'saveObservations', payload: { observation } })
     },
   },
   reducers: {
@@ -55,5 +56,15 @@ export default {
     saveCurrentObservation(state, { payload: { currentObservation } }) {
       return { ...state, currentObservation }
     },
+    dealy(){
+
+      return
+    }
   },
+}
+
+function delay(time) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, time);
+  });
 }

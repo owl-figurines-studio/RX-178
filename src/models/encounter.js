@@ -9,8 +9,9 @@ export default {
   },
   effects: {
     *queryEncounter({ payload }, { call, put }) {
+      yield call(delay, 1000);
       const { data } = yield call(encounterServices.queryEncounter, payload)
-      const { ocr: { edges } } = data
+      const { encounter: { edges } } = data
       const encounters = edges.map(item => item.node)
       yield put({ type: 'saveEncounters', payload: { encounters } })
     },
@@ -33,4 +34,10 @@ export default {
       return { ...state, currentEncounter }
     },
   },
+}
+
+function delay(time) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, time);
+  });
 }
