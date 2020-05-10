@@ -49,7 +49,7 @@ export default {
   effects: {
     * sendPhoneNum({ payload }, { call, put }) {
       const { userphone } = payload
-      yield put({ type: 'saveUserPhone', payload: { userphone } })
+      yield put({ type: 'saveUserPhone', payload: { userPhone:userphone } })
       console.log('Hi')
       const { data } = yield call(userServices.sendPhoneNum, payload)
       const { userStateCode, userStateMessage } = data

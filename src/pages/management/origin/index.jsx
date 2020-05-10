@@ -1,6 +1,6 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Button } from '@tarojs/components'
-import { AtTag, AtModal, AtAccordion, AtIcon, AtList, AtListItem, AtActivityIndicator } from 'taro-ui'
+import { AtTag, AtModal, AtAccordion, AtIcon, AtList, AtListItem, AtActivityIndicator, AtCheckbox } from 'taro-ui'
 import { connect } from '@tarojs/redux'
 import classNames from 'classnames'
 import BasicPage from 'src/containers/BasicPage'
@@ -48,6 +48,8 @@ class Origin extends Component {
       updateList: [],
       createList: [],
       changedEncounter: {},
+      isEncounterEdit: false,
+      encountersEditList: [],
     }
   }
 
@@ -78,6 +80,13 @@ class Origin extends Component {
     }
     this.setState({
       isEdit: !isEdit
+    })
+  }
+
+  onEncounterEdit = () => {
+    const { isEncounterEdit } = this.state
+    this.setState({
+      isEncounterEdit: !isEncounterEdit
     })
   }
 
@@ -194,12 +203,12 @@ class Origin extends Component {
     })
   }
 
-  queryEncounter = (arg = {}) => {
+  queryEncounter = () => {
     const { dispatch } = this.props
     dispatch({
       type: "encounter/queryEncounter",
       payload: {
-        arg,
+        arg: { active: true },
         fields: ['id', 'period', 'classmodel{code}'],
       }
     })
@@ -411,6 +420,33 @@ class Origin extends Component {
     })
   }
 
+  onEncountersEditListChange = nextList => {
+    this.setState({
+      encountersEditList: nextList,
+    })
+  }
+
+  deleteEncounters = () => {
+    const { encountersEditList } = this.state
+    const { encounters, dispatch } = this.props
+    encountersEditList.forEach(item => {
+      const { id } = encounters[item]
+      dispatch({
+        type: 'encounter/updateEncounter',
+        payload: {
+          arg: {
+            id,
+            active: false,
+          },
+          fields: ['id', 'period', 'classmodel{code}'],
+        }
+      }).then(() => {
+        this.setState({ isEncounterEdit: false })
+        this.queryEncounter()
+      })
+    })
+  }
+
   render() {
     const {
       current,
@@ -421,6 +457,8 @@ class Origin extends Component {
       isEncounterOpen,
       isObservationOpen,
       dataList,
+      isEncounterEdit,
+      encountersEditList,
     } = this.state
     const navBarProps = {
       title: '元数据',
@@ -432,7 +470,7 @@ class Origin extends Component {
       createObservationLoading,
       updateObservationLoading,
       queryEncounterLoading,
-      updateEncounterLoading
+      updateEncounterLoading,
     } = this.props
 
     return (
@@ -446,36 +484,92 @@ class Origin extends Component {
         {
           current === 0 ? (
             <View>
-              {queryEncounterLoading ? (
+              {queryEncounterLoading || updateEncounterLoading ? (
                 <AtActivityIndicator mode='center' content='加载中' size='50px' />
               ) : (
                   <View>
-                    {
-                      encounters.length > 0 ? (
-                        <View>
+                    <View className={styles.header} >
+                      <View className={classNames('at-row')} >
+                        <View className={classNames('at-col', 'at-col-1')} onClick={() => { Taro.navigateBack({ delta: 1 }) }} >
+                          <AtIcon value='chevron-left' color='#7093EA' />
+                        </View>
+                        <View className={classNames('at-col', 'at-col-1', styles.return)} onClick={() => { Taro.navigateBack({ delta: 1 }) }} >
+                          返回
+                        </View>
+                        <View className={classNames('at-col', 'at-col-3', 'at-col__offset-4')} >
                           {
-                            encounters.map(item => {
-                              const { classmodel: { code }, period } = item
-                              return (
-                                <AtList key={`${code}${period}`} >
-                                  <AtListItem
-                                    title={code}
-                                    note={period}
-                                    extraText='详细信息'
-                                    arrow='right'
-                                    onClick={() => this.detail(item)}
-                                  />
-                                </AtList>
-                              )
-                            })
+                            isEncounterEdit ? (
+                              <AtTag
+                                size='normal'
+                                circle
+                                onClick={this.deleteEncounters}
+                                active
+                              >
+                                删除
+                              </AtTag>
+                            ) : null
                           }
                         </View>
-                      ) : (
-                          <View className={styles.empty} >
-                            <View>无数据</View>
+                        <View className={classNames('at-col', 'at-col-3')} >
+                          <AtTag
+                            size='normal'
+                            circle
+                            onClick={this.onEncounterEdit}
+                            active
+                          >
+                            {isEncounterEdit ? ('完成') : ('编辑')}
+                          </AtTag>
+                        </View>
+                      </View>
+                    </View>
+                    <View className={styles.content} >
+                      {
+                        encounters.length > 0 ? (
+                          <View>
+                            {
+                              isEncounterEdit ? (
+                                <View>
+                                  <AtCheckbox
+                                    options={
+                                      encounters.map((item, index) => {
+                                        const { classmodel: { code }, period } = item
+                                        return { label: code, value: index, desc: period }
+                                      })
+                                    }
+                                    selectedList={encountersEditList}
+                                    onChange={this.onEncountersEditListChange}
+                                  />
+                                </View>
+                              ) : (
+                                  <View>
+                                    {
+                                      encounters.map(item => {
+                                        const { classmodel: { code }, period } = item
+                                        return (
+                                          <AtList key={`${code}${period}`} >
+                                            <AtListItem
+                                              title={code}
+                                              note={period}
+                                              extraText='详细信息'
+                                              arrow='right'
+                                              onClick={() => this.detail(item)}
+                                            />
+                                          </AtList>
+                                        )
+                                      })
+                                    }
+                                  </View>
+                                )
+                            }
+
                           </View>
-                        )
-                    }
+                        ) : (
+                            <View className={styles.empty} >
+                              <View>无数据</View>
+                            </View>
+                          )
+                      }
+                    </View>
                   </View>)}
             </View>
           ) : (

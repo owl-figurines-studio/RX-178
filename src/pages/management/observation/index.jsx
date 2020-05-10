@@ -1,13 +1,12 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Button } from '@tarojs/components'
-import { AtTag, AtModal, AtAccordion, AtIcon, AtList, AtListItem, AtActivityIndicator, AtRadio } from 'taro-ui'
+import { AtTag, AtModal, AtAccordion, AtIcon, AtList, AtListItem, AtActivityIndicator, AtCheckbox } from 'taro-ui'
 import { connect } from '@tarojs/redux'
 import classNames from 'classnames'
 import BasicPage from 'src/containers/BasicPage'
 import EditField from 'src/components/editField'
 import EditDate from 'src/components/editDate'
 import { changedFieldKeys } from 'src/utils/common'
-// import { router } from 'src/utils/router'
 import styles from './index.module.less'
 
 
@@ -50,6 +49,7 @@ class Observation extends Component {
       createList: [],
       changedEncounter: {},
       isEncounterEdit: false,
+      encountersEditList: [],
     }
   }
 
@@ -80,6 +80,13 @@ class Observation extends Component {
     }
     this.setState({
       isEdit: !isEdit
+    })
+  }
+
+  onEncounterEdit = () => {
+    const { isEncounterEdit } = this.state
+    this.setState({
+      isEncounterEdit: !isEncounterEdit
     })
   }
 
@@ -196,12 +203,12 @@ class Observation extends Component {
     })
   }
 
-  queryEncounter = (arg = {}) => {
+  queryEncounter = () => {
     const { dispatch } = this.props
     dispatch({
       type: "encounter/queryEncounter",
       payload: {
-        arg,
+        arg: { active: true },
         fields: ['id', 'period', 'classmodel{code}'],
       }
     })
@@ -413,6 +420,33 @@ class Observation extends Component {
     })
   }
 
+  onEncountersEditListChange = nextList => {
+    this.setState({
+      encountersEditList: nextList,
+    })
+  }
+
+  deleteEncounters = () => {
+    const { encountersEditList } = this.state
+    const { encounters, dispatch } = this.props
+    encountersEditList.forEach(item => {
+      const { id } = encounters[item]
+      dispatch({
+        type: 'encounter/updateEncounter',
+        payload: {
+          arg: {
+            id,
+            active: false,
+          },
+          fields: ['id', 'period', 'classmodel{code}'],
+        }
+      }).then(() => {
+        this.setState({ isEncounterEdit: false })
+        this.queryEncounter()
+      })
+    })
+  }
+
 
 
   render() {
@@ -425,6 +459,8 @@ class Observation extends Component {
       isEncounterOpen,
       isObservationOpen,
       dataList,
+      isEncounterEdit,
+      encountersEditList,
     } = this.state
     const navBarProps = {
       title: '元数据',
@@ -435,7 +471,7 @@ class Observation extends Component {
       createObservationLoading,
       updateObservationLoading,
       queryEncounterLoading,
-      updateEncounterLoading
+      updateEncounterLoading,
     } = this.props
 
     return (
@@ -443,26 +479,40 @@ class Observation extends Component {
         {
           current === 0 ? (
             <View>
-              {queryEncounterLoading ? (
+              {queryEncounterLoading || updateEncounterLoading ? (
                 <AtActivityIndicator mode='center' content='加载中' size='50px' />
               ) : (
                   <View>
                     <View className={styles.header} >
                       <View className={classNames('at-row')} >
-                        <View className={classNames('at-col', 'at-col-1')} onClick={() => this.currentSwitch(0)} >
+                        <View className={classNames('at-col', 'at-col-1')} onClick={() => { Taro.navigateBack({ delta: 1 }) }} >
                           <AtIcon value='chevron-left' color='#7093EA' />
                         </View>
-                        <View className={classNames('at-col', 'at-col-1', styles.return)} onClick={() => this.currentSwitch(0)} >
+                        <View className={classNames('at-col', 'at-col-1', styles.return)} onClick={() => { Taro.navigateBack({ delta: 1 }) }} >
                           返回
                         </View>
-                        <View className={classNames('at-col', 'at-col-3', 'at-col__offset-7')} >
+                        <View className={classNames('at-col', 'at-col-3', 'at-col__offset-4')} >
+                          {
+                            isEncounterEdit ? (
+                              <AtTag
+                                size='normal'
+                                circle
+                                onClick={this.deleteEncounters}
+                                active
+                              >
+                                删除
+                              </AtTag>
+                            ) : null
+                          }
+                        </View>
+                        <View className={classNames('at-col', 'at-col-3')} >
                           <AtTag
                             size='normal'
                             circle
-                            onClick={this.onEdit}
+                            onClick={this.onEncounterEdit}
                             active
                           >
-                            {isEdit ? ('完成') : ('编辑')}
+                            {isEncounterEdit ? ('完成') : ('编辑')}
                           </AtTag>
                         </View>
                       </View>
@@ -472,21 +522,41 @@ class Observation extends Component {
                         encounters.length > 0 ? (
                           <View>
                             {
-                              encounters.map(item => {
-                                const { classmodel: { code }, period } = item
-                                return (
-                                  <AtList key={`${code}${period}`} >
-                                    <AtListItem
-                                      title={code}
-                                      note={period}
-                                      extraText='详细信息'
-                                      arrow='right'
-                                      onClick={() => this.detail(item)}
-                                    />
-                                  </AtList>
+                              isEncounterEdit ? (
+                                <View>
+                                  <AtCheckbox
+                                    options={
+                                      encounters.map((item, index) => {
+                                        const { classmodel: { code }, period } = item
+                                        return { label: code, value: index, desc: period }
+                                      })
+                                    }
+                                    selectedList={encountersEditList}
+                                    onChange={this.onEncountersEditListChange}
+                                  />
+                                </View>
+                              ) : (
+                                  <View>
+                                    {
+                                      encounters.map(item => {
+                                        const { classmodel: { code }, period } = item
+                                        return (
+                                          <AtList key={`${code}${period}`} >
+                                            <AtListItem
+                                              title={code}
+                                              note={period}
+                                              extraText='详细信息'
+                                              arrow='right'
+                                              onClick={() => this.detail(item)}
+                                            />
+                                          </AtList>
+                                        )
+                                      })
+                                    }
+                                  </View>
                                 )
-                              })
                             }
+
                           </View>
                         ) : (
                             <View className={styles.empty} >
