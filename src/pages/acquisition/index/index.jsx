@@ -1,5 +1,5 @@
 import Taro, { Component } from '@tarojs/taro'
-import { Picker, View, ScrollView, Text, MovableArea, MovableView, Image } from '@tarojs/components'
+import { Picker, View, ScrollView, Text, MovableArea, MovableView, Image, Button } from '@tarojs/components'
 import {
   AtButton,
   AtFloatLayout,
@@ -335,7 +335,7 @@ class Acquisition extends Component {
               />
             </AtModalContent>
             <AtModalAction>
-              <AtButton onClick={this.copyDetal} >复制</AtButton><AtButton onClick={this.ocrDetailClose} >关闭</AtButton>
+              <Button onClick={this.copyDetal} >复制</Button><Button onClick={this.ocrDetailClose} >关闭</Button>
             </AtModalAction>
           </AtModal>
 
@@ -344,7 +344,7 @@ class Acquisition extends Component {
               <Image className={styles.modalImage} src={currentRecordImage} mode='aspectFit' />
             </AtModalContent>
             <AtModalAction>
-              <AtButton onClick={this.switchCurrentOCRresult} >切换此次结果</AtButton><AtButton onClick={this.historyConfirmClose} >关闭</AtButton>
+              <Button onClick={this.switchCurrentOCRresult} >切换此次结果</Button><Button onClick={this.historyConfirmClose} >关闭</Button>
             </AtModalAction>
           </AtModal>
 
