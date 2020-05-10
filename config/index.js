@@ -15,20 +15,19 @@ const config = {
   alias: {
     'src': path.resolve(__dirname, '..', 'src'),
   },
-  plugins: {
-    babel: {
-      sourceMap: true,
-      presets: [
-        ['env', {
-          modules: false
-        }]
-      ],
-      plugins: [
-        'transform-decorators-legacy',
-        'transform-class-properties',
-        'transform-object-rest-spread'
-      ]
-    }
+  plugins: [],
+  babel: {
+    sourceMap: true,
+    presets: [
+      ['env', {
+        modules: false
+      }]
+    ],
+    plugins: [
+      'transform-decorators-legacy',
+      'transform-class-properties',
+      'transform-object-rest-spread'
+    ]
   },
   defineConstants: {
   },
