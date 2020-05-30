@@ -150,7 +150,6 @@ class BasicPage extends Component {
         url: router(tabBarRoute[index])
       })
     }
-
   }
 
 

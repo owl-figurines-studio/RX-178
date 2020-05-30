@@ -36,7 +36,7 @@ class diabetes extends Component {
       resultAccordion: false,
       isObservationFloatOpen: false,
       observationData: [],
-      floatTitle:"",
+      floatTitle: "",
     }
   }
 
@@ -103,7 +103,7 @@ class diabetes extends Component {
   }
 
   openObservationFloat = code => {
-    this.setState({floatTitle:`${code}历史`})
+    this.setState({ floatTitle: `${code}历史` })
     this.queryObservationByCode(code)
     this.observationFloatSwitch(true)
   }
@@ -183,21 +183,30 @@ class diabetes extends Component {
       <BasicPage navBarProps={navBarProps} tabBarVisible={!isObservationFloatOpen} >
 
         <AtFloatLayout isOpened={isObservationFloatOpen} title={floatTitle} onClose={() => this.observationFloatSwitch(false)} >
-          <AtList>
-            {
-              observationData.map((item, index) => {
-                const { valueQuantity: { value, unit }, code: { text }, } = item
-                return (
-                  <AtListItem
-                    key={`${text}${index}`}
-                    title={`${value} ${unit}`}
-                    note={`${text}`}
-                    onClick={() => this.choiceData('bloodPressure', value)}
-                  />
-                )
-              })
-            }
-          </AtList>
+          {
+            observationData.length > 0 ? (
+              <AtList>
+                {
+                  observationData.map((item, index) => {
+                    const { valueQuantity: { value, unit }, code: { text }, } = item
+                    return (
+                      <AtListItem
+                        key={`${text}${index}`}
+                        title={`${value} ${unit}`}
+                        note={`${text}`}
+                        onClick={() => this.choiceData('bloodPressure', value)}
+                      />
+                    )
+                  })
+                }
+              </AtList>
+            ) : (
+                <View className={styles.empty} >
+                  <View>无数据</View>
+                </View>
+              )
+          }
+
         </AtFloatLayout>
 
         <View>

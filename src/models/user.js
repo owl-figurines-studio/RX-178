@@ -41,8 +41,8 @@ export default {
   namespace: "user",
   state: {
     userName: null,
-    userPhone: null,
-    userStateCode: null,
+    userPhone: "18258232093",
+    userStateCode: 1001,
     loginCode: null,
     patientInfo: null
   },
