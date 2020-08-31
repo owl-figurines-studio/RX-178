@@ -1,9 +1,9 @@
-import '@tarojs/async-await'
-import Taro, { Component, Config } from '@tarojs/taro'
-import { Provider } from '@tarojs/redux'
+import React, { Component } from 'react'
+import Taro from '@tarojs/taro'
+import { Provider } from 'react-redux'
 import 'taro-ui/dist/style/index.scss'
 
-import Index from './pages/index'
+import Index from './pages/index/index'
 import dva from './utils/dva'
 import models from './models/index';
 
@@ -31,18 +31,6 @@ class App extends Component {
    * 对于像 navigationBarTextStyle: 'black' 这样的推导出的类型是 string
    * 提示和声明 navigationBarTextStyle: 'black' | 'white' 类型冲突, 需要显示声明类型
    */
-  config: Config = {
-    pages: [
-      'pages/index/index',
-      
-    ],
-    window: {
-      backgroundTextStyle: 'light',
-      navigationBarBackgroundColor: '#fff',
-      navigationBarTitleText: 'WeChat',
-      navigationBarTextStyle: 'black'
-    }
-  }
 
   componentDidMount() {
     //将redux状态挂载到 Taro 对象上，方便使用
@@ -59,11 +47,9 @@ class App extends Component {
   // 请勿修改此函数
   render() {
     return (
-      <Provider store={store}>
-        <Index />
-      </Provider>
+      <Provider store={store}>{this.props.children}</Provider>
     )
   }
 }
 
-Taro.render(<App />, document.getElementById('app'))
+export default App
