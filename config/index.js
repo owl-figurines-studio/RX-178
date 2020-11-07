@@ -1,4 +1,5 @@
 const path = require('path')
+
 const config = {
   projectName: 'class_manager',
   date: '2020-7-17',
@@ -14,7 +15,7 @@ const config = {
     'src': path.resolve(__dirname, '..', 'src'),
   },
   plugins: [
-    '@tarojs/plugin-mock',
+    // '@tarojs/plugin-mock',
   ],
   defineConstants: {
   },

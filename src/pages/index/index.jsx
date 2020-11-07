@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-
 import { View, Navigator } from '@tarojs/components'
 import { connect } from 'react-redux'
 import BasicPage from 'src/containers/BasicPage'

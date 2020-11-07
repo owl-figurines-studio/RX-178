@@ -1,0 +1,69 @@
+.movableArea {
+  height: 92vh;
+  width: 100vw;
+  background: rgba(0, 0, 0, 0);
+  z-index: 1;
+
+  .modalImage {
+    position: relative;
+    height: 45vh;
+    width: 100%;
+    background-color: gray;
+  }
+
+  .movableView {
+    height: 80px;
+    width: 80px;
+    border-radius: 50%;
+    z-index: 9;
+
+    .fabButton {
+      position: relative;
+    }
+
+    .fabMenu {
+      position: fixed;
+      height: 240px;
+      width: 240px;
+      top: -80px;
+      left: -80rpx;
+      background-color: rgba(128, 128, 128, 0.8);
+      border-radius: 50%;
+
+      .menuLeft {
+        position: fixed;
+        top: 18rpx;
+        right: 102rpx;
+      }
+
+      .menuTop {
+        position: fixed;
+        bottom: 102rpx;
+        left: 18rpx;
+      }
+    }
+  }
+}
+
+.tabsPaneContent {
+  padding: 5px 10px 5px;
+  height: 700rpx;
+  background-color: #FAFBFC;
+  text-align: center;
+}
+
+.empty {
+  padding: 5px 10px 5px;
+  line-height: 350px;
+  height: 700rpx;
+  background-color: #FAFBFC;
+  text-align: center;
+  font-size: large;
+
+  .loading {
+    position: relative;
+    top: 350rpx;
+    left: 20vw;
+
+  }
+}

@@ -1,15 +1,15 @@
+
 import React, { Component } from 'react'
-import Taro from '@tarojs/taro'
-import { View } from '@tarojs/components'
+import { View, Text } from '@tarojs/components'
 import { connect } from 'react-redux'
-import { AtInput, AtForm, AtButton, AtCard } from 'taro-ui'
+import { AtInput, AtForm, AtButton } from 'taro-ui'
 import BasicPage from 'src/containers/BasicPage'
 import { router } from 'src/utils/router'
-import styles from './index.module.less'
+import Taro from '@tarojs/taro'
 
 @connect(({ user }) => {
-  const { userStateCode } = user
-  return { userStateCode }
+  const { verifyStateCode } = user
+  return { verifyStateCode }
 })
 class Verify extends Component {
 
@@ -18,13 +18,6 @@ class Verify extends Component {
     this.state = {
       userPhoneNum: null,
       verificationCode: null,
-    }
-  }
-
-  componentDidMount() {
-    const { userStateCode } = this.props
-    if (userStateCode === 1001) {
-      Taro.redirectTo({ url: router('acquisition') })
     }
   }
 
@@ -62,7 +55,7 @@ class Verify extends Component {
         verification_code: verificationCode,
         userphone: userPhoneNum
       }
-    }).then(() => Taro.redirectTo({ url: router('acquisition') }))
+    })
   }
 
   loginIn = () => {
@@ -92,45 +85,43 @@ class Verify extends Component {
   }
 
   render() {
+    const { verifyStateCode } = this.props
     const { userPhoneNum, verificationCode } = this.state
     const navBarProps = {
 
     }
     return (
-      <BasicPage navBarProps={navBarProps} tabBarVisible={false} >
-        <View className={styles.verify}>
-          <AtCard
-            title='手机验证'
+      <BasicPage navBarProps={navBarProps}>
+        <View className='login'>
+          <AtForm
+            onSubmit={this.sendPhoneNum}
           >
-            <AtForm
-              onSubmit={this.sendPhoneNum}
-            >
-              <AtInput
-                name='userPhoneNum'
-                title='电话'
-                type='number'
-                placeholder='请输入电话号码'
-                value={userPhoneNum}
-                onChange={value => this.phoneNumberOnChange(value)}
-              >
-                <AtButton className='sendPhoneNum' formType='submit'>发送验证</AtButton>
-              </AtInput>
-            </AtForm>
-            <AtForm
-              onSubmit={this.verifyok}
-            >
-              <AtInput
-                name='verificationCode'
-                title='验证码'
-                type='number'
-                placeholder='请输入验证码'
-                value={verificationCode}
-                onChange={value => this.verificationCodeOnChange(value)}
-              />
-              <AtButton className='login' formType='submit' >登录</AtButton>
-            </AtForm>
-          </AtCard>
+            <AtInput
+              name='userPhoneNum'
+              title='电话'
+              type='number'
+              placeholder='请输入电话号码'
+              value={userPhoneNum}
+              onChange={value => this.phoneNumberOnChange(value)}
+            />
+            <AtButton className='sendPhoneNum' formType='submit'>发送验证</AtButton>
+          </AtForm>
+          <AtForm
+            onSubmit={this.verifyok}
+          >
+            <AtInput
+              name='verificationCode'
+              title='验证码'
+              type='number'
+              placeholder='请输入验证码'
+              value={verificationCode}
+              onChange={value => this.verificationCodeOnChange(value)}
+            />
+            <AtButton className='login' formType='submit' >登录</AtButton>
+          </AtForm>
+          <View><Text>{verifyStateCode}</Text></View>
         </View>
+        {/* </AtNavBar> */}
       </BasicPage>
     )
   }

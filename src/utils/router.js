@@ -2,7 +2,6 @@ import Taro from '@tarojs/taro'
 
 const root = '/pages'
 
-// 路由列表
 export const routes = [
   //首页
   {
@@ -77,7 +76,6 @@ export const routes = [
     path: 'management/encounter',
     component: '/management/encounter/index'
   },
-  
 ]
 
 //路由器
